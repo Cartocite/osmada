@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="Overpass API">
+<note>The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.</note>
+<meta osm_base="2016-10-11T10:18:02Z"/>
+
+{% for action in diff.actions.all %}
+
+<action type="{{ action.type }}">
+  {% if action.type == 'modify' %}
+  <old>
+    {% include "osmdata/adiff/osmelement_detail.xml" with element=action.old %}
+  </old>
+  {% endif %}
+
+  {% if action.type == 'modify' %}
+  <new>
+    {% include "osmdata/adiff/osmelement_detail.xml" with element=action.new %}
+  </new>
+  {% endif %}
+
+  {% if action.type == 'create' %}
+  {% include "osmdata/adiff/osmelement_detail.xml" with element=action.new %}
+  {% endif %}
+</action>
+{% endfor %}
+</osm>

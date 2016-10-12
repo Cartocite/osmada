@@ -1,0 +1,6 @@
+{% extends "osmdata/adiff/abstract_osmelement_detail.xml" %}
+{% block element_content %}
+{% for nd in element.way.nodes.all %}
+  <nd ref="{{ nd.osmid }}" lat="{{ nd.node.lat|floatformat:"7" }}" lon="{{ nd.node.lon|floatformat:"7" }}"/>
+{% endfor %}
+{% endblock element_content %}

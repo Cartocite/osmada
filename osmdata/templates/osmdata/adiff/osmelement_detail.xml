@@ -1,0 +1,7 @@
+{% if element.type == "way" %}
+  {% include "osmdata/adiff/way_detail.xml"%}
+{% elif element.type == "node" %}
+  {% include "osmdata/adiff/node_detail.xml"%}
+{% elif element.type == "relation" %}
+  {% include "osmdata/adiff/relation_detail.xml"%}
+{% endif %}

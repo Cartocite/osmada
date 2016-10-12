@@ -1,0 +1,14 @@
+{% extends "osmdata/adiff/abstract_osmelement_detail.xml" %}
+
+{% block element_content %}
+{% for member in element.relation.members.all %}
+<member type="{{ member.element.type }}" ref="{{ member.element.osmid }}" role="{{ member.role }}"
+        {% if member.element.type == "node" %}lat="{{ member.element.node.lat|floatformat:"7" }}" lon="{{ member.element.node.lon|floatformat:"7" }}" {% endif %} {% if member.element.type != 'way' %}/{% endif %}>
+  {% if member.element.type == "way" %}
+      {% for nd in member.element.way.nodes.all %}
+        <nd lat="{{ nd.lat|floatformat:'7' }}" lon="{{ nd.lon|floatformat:'7' }}" />
+        {% endfor %}
+</member>{# only way is not self-closed #}
+   {% endif %}
+{% endfor %}
+{% endblock element_content %}
