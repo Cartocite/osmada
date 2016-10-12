@@ -1,12 +1,18 @@
+import datetime
 import xml.dom.minidom
 
+import pytz
 
 from .models import (
-    Action, Diff, Node, Relation, RelationMember, Tag, Way, WayNode)
+    Action, Bounds, Diff, Node, Relation, RelationMember, Tag, Way, WayNode)
 
 
 class FileFormatError(Exception):
     pass
+
+zulu_tz = pytz.timezone('Zulu')
+def parse_iso8601(s):
+    return zulu_tz.localize(datetime.datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ" ))
 
 def getFirstNontextChild(element):
     """ Return the first non-text child
@@ -169,16 +175,28 @@ class AbstractOSMElementParser(AbstractXMLParser):
                 osmid_key = key
                 break
 
-        if osmid_key is None:
-            return {}
-        else:
-            return {
-                'osmid': self.node.attributes[osmid_key].value,
-            }
+        attrs = {}
+        if osmid_key is not None:
+            attrs['osmid'] = self.node.attributes[osmid_key].value
+
+        # Handle optional attrs
+        for i in ('version', 'uid', 'user', 'changeset'):
+            if i in self.node.attributes:
+                attrs[i] = self.node.attributes[i].value
+
+        if 'timestamp' in self.node.attributes:
+            attrs['timestamp'] = parse_iso8601(self.node.attributes['timestamp'].value)
+
+        return attrs
 
 class RelationParser(AbstractOSMElementParser):
+    """ <relation> parser
+    """
+
     def parse(self):
-        relation =  Relation.objects.create(**self.get_basic_attributes())
+        relation =  Relation.objects.create(
+            bounds=self.parse_bounds(),
+            **self.get_basic_attributes())
 
         for index, node in enumerate(self.node.getElementsByTagName('member')):
             member_parser = RelationMemberParser(node, relation, index)
@@ -200,10 +218,14 @@ class NodeParser(AbstractOSMElementParser):
         self.parse_tags(node)
         return node
 
-
 class WayParser(AbstractOSMElementParser):
+    """ <way> or <member type="relation"> parser
+    """
+
     def parse(self):
-        way = Way.objects.create(**self.get_basic_attributes())
+        way = Way.objects.create(
+            bounds=self.parse_bounds(),
+            **self.get_basic_attributes())
 
         for index, nd in enumerate(self.node.getElementsByTagName('nd')):
 
