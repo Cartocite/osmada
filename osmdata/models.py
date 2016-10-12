@@ -45,7 +45,6 @@ class Node(OSMElement):
     lat = models.FloatField() # FIXME ; could be validated better
     lon = models.FloatField()
 
-
 class Way(OSMElement):
     nodes = models.ManyToManyField(Node, through='WayNode')
 
@@ -57,12 +56,14 @@ class WayNode(models.Model):
 
 
 class Relation(OSMElement):
-    members = models.ManyToManyField(
-        OSMElement, through='RelationMember', related_name='parent_relation')
+    pass
+    # members = models.ManyToManyField(
+    #     OSMElement, through='RelationMember', related_name='parent_relation')
+
 
 
 class RelationMember(models.Model):
-    relation = models.ForeignKey(Relation)
+    relation = models.ForeignKey(Relation, related_name='members')
     element = models.ForeignKey(OSMElement, related_name='related_element')
     order = models.PositiveIntegerField()
     role = models.CharField(max_length=255, blank=True)
