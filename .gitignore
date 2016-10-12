@@ -1,0 +1,9 @@
+*.pyc
+*~
+.DS_Store
+.project
+/static
+/media
+.idea
+venv
+db.sqlite3
