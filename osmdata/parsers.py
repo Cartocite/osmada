@@ -9,22 +9,37 @@ class FileFormatError(Exception):
     pass
 
 def getFirstNontextChild(element):
+    """ Return the first non-text child
+
+    :param element: the parent element to search in
+    :type element: xml.dom.minidom.Element
+    :rtype: xml.dom.minidom.Element
+    :return: The first child element which is not a text node
+    """
     for i in element.childNodes:
         if not isinstance(i, xml.dom.minidom.Text):
             return i
 
+
 class AbstractXMLParser:
+    """ Base class for Adiff XML node parsers
+    """
+
     ELEMENT_TYPES = {
         'node': Node,
         'way': Way,
         'relation': Relation,
     }
 
+    # See at the end of the file for definition of :
+    # PARSER_MAP = {...}
 
     def __init__(self, node):
         self.node = node
 
-    def _dict_fetch(self, _dict, str_name):
+
+    @staticmethod
+    def _dict_fetch(_dict, str_name):
         """ Given a str name, returns the matching parser
         """
         try:
@@ -34,15 +49,17 @@ class AbstractXMLParser:
                 'Unknown member type : "{}"'.format(str_name))
         return klass
 
-    def get_model(self, str_name):
+    @classmethod
+    def get_model(cls, str_name):
         """ Given a str name, returns the matching model
         """
-        return self._dict_fetch(self.ELEMENT_TYPES, str_name)
+        return cls._dict_fetch(cls.ELEMENT_TYPES, str_name)
 
-    def get_parser(self, str_name):
+    @classmethod
+    def get_parser(cls, str_name):
         """ Given a str name, returns the matching model
         """
-        return self._dict_fetch(PARSER_MAP, str_name)
+        return cls._dict_fetch(cls.PARSER_MAP, str_name)
 
     def transform(self, node, name=None):
         """"Given a node/way/relation, creates a Django object in db
@@ -52,9 +69,20 @@ class AbstractXMLParser:
         klass = self.get_parser(node.localName)
         return klass(node).parse()
 
+    def parse(self):
+        """ Parse the XML node and retuns a model instance
+
+        Can recurse, on sub-nodes calling other parsers, only the top-level
+        node(s) is/are returned.
+
+        :rtype: a OSMElement or a list of OSMElement
+        """
+        raise NotImplemented
 
 
 class RelationMemberParser(AbstractXMLParser):
+    """ <member> parser
+    """
     def __init__(self, node, relation, order):
         self.node = node
         self.relation = relation
@@ -82,14 +110,29 @@ class RelationMemberParser(AbstractXMLParser):
             role=self.node.attributes['role'].value)
 
 
-class AbstractOSMElementParser(AbstractXMLParser):
-    def mk_tags(self):
-        pass
+class BoundsParser(AbstractXMLParser):
+    BOUNDS_ATTRS = ('minlat', 'minlon', 'maxlat', 'maxlon')
 
+    def parse(self):
+        attrs = {k:self.node.attributes[k].value for k in self.BOUNDS_ATTRS}
+        return Bounds.objects.create(**attrs)
+
+
+class AbstractOSMElementParser(AbstractXMLParser):
+    """ Base class for XML nodes representing OSM elements
+
+    Possible elements are way, node or relation
+    """
     def parse_tags(self, element):
-        """
+        """ Parse the elements tags (if any)
+
+        - parse elements
+        - create the tags in db and links them to the element in db.
+
         :param element: the element the tags refer to.
         :type element: OSMElement
+        :return the created tags
+        :rtype list of Tag:
         """
         tags = []
         for tag_el in self.node.getElementsByTagName('tag'):
@@ -100,10 +143,25 @@ class AbstractOSMElementParser(AbstractXMLParser):
             ))
         return tags
 
+    def parse_bounds(self):
+        """ Parse the <bounds> (if any)
+        """
+        # No more than 1 bounds
+        try:
+            bounds_tag = self.node.getElementsByTagName('bounds')[0]
+        except IndexError:
+            pass  # optional
+        else:
+            parser = BoundsParser(bounds_tag)
+            return parser.parse()
+
     def get_basic_attributes(self):
         """ Return shared attributes for all OSM data types
 
-        Can handle both plain version of objects (with an "id" attribute) and nested versions (with a "ref" attribute).
+        Can handle both plain version of objects (with an "id" attribute) and
+        nested versions (with a "ref" attribute).
+
+        :rtype: dict
         """
         osmid_key = None
         for key in ('id', 'ref'):
@@ -130,6 +188,9 @@ class RelationParser(AbstractOSMElementParser):
 
 
 class NodeParser(AbstractOSMElementParser):
+    """ <node>, <nd> or <member type="node"> parser
+    """
+
     def parse(self):
         node = Node.objects.create(
             lat=self.node.attributes['lat'].value,
@@ -153,17 +214,17 @@ class WayParser(AbstractOSMElementParser):
         return way
 
 
-class ActionParser(AbstractXMLParser):
-    def parse_element(self, element_node):
-        # A old/new tag contains one and only one child element
-        try:
-            klass = self.get_model(element_node.localName)
-        except IndexError:
-            raise FileFormatError('old/new tags must have a child node')
+# Here to avoid cyclic dependecies
+AbstractXMLParser.PARSER_MAP = {
+    'node': NodeParser,
+    'way': WayParser,
+    'relation': RelationParser,
+}
 
-        else:
-            print(klass)
-            #return klass.objects.create(osmid=element_node.attributes['id'])
+
+class ActionParser(AbstractXMLParser):
+    """ <action> parser
+    """
     def _get_old_new(self):
         for i in ('old', 'new'):
             try:
@@ -211,10 +272,3 @@ class AdiffParser(AbstractXMLParser):
 
         diff.actions.set(actions)
         return diff
-
-
-PARSER_MAP = {
-    'node': NodeParser,
-    'way': WayParser,
-    'relation': RelationParser,
-}

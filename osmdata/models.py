@@ -2,9 +2,33 @@ from __future__ import unicode_literals
 
 from django.db import models
 
+
+class Bounds(models.Model):
+    minlat = models.FloatField()
+    minlon = models.FloatField()
+    maxlat = models.FloatField()
+    maxlon = models.FloatField()
+
+
 class OSMElement(models.Model):
+    SUBTYPES = ('node', 'relation', 'way')
+
     osmid = models.PositiveIntegerField(null=True)
-#    timestamp = models.DateTimeField()
+    version = models.PositiveIntegerField(null=True)
+    timestamp = models.DateTimeField(null=True)
+    uid = models.PositiveIntegerField(null=True)
+    user = models.CharField(blank=True, max_length=255)
+    changeset = models.PositiveIntegerField(null=True)
+    bounds = models.OneToOneField(Bounds, null=True)
+
+    def specialized(self):
+        return getattr(self, self.type())
+
+    def type(self):
+        for i in self.SUBTYPES:
+            if hasattr(self, i):
+                return i
+        raise ValueError('{} must be of one of those subtypes {}'.format(self, self.SUBTYPES))
 
     def __str__(self):
         return '<{} id="{}">'.format(self.__class__.__name__, self.osmid)
