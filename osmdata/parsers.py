@@ -256,18 +256,16 @@ class ActionParser(AbstractXMLParser):
         if action_type == 'create':
             new = self.transform(getFirstNontextChild(self.node))
 
-        elif action_type == 'modify':
+        elif action_type in ('modify', 'delete'):
             old_tag, new_tag = self._get_old_new()
             if old_tag:
                 old = self.transform(old_tag)
 
             if new_tag:
                 new = self.transform(new_tag)
-
-        elif action_type == 'delete':
-            old_tag, _ = self._get_old_new()
-
-            old = self.transform(old_tag)
+        else:
+            raise FileFormatError("{} is an unknown action type".format(
+                action_type))
 
         return Action.objects.create(
             new=new, old=old, type=action_type)
