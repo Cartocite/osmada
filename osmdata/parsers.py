@@ -4,7 +4,8 @@ import xml.dom.minidom
 import pytz
 
 from .models import (
-    Action, Bounds, Diff, Node, Relation, RelationMember, Tag, Way, WayNode)
+    Action, Bounds, Diff, Node, OSMElement, Relation,
+    RelationMember, Tag, Way, WayNode)
 
 
 class FileFormatError(Exception):
@@ -32,9 +33,9 @@ class AbstractXMLParser:
     """
 
     ELEMENT_TYPES = {
-        'node': Node,
-        'way': Way,
-        'relation': Relation,
+        OSMElement.NODE: Node,
+        OSMElement.WAY: Way,
+        OSMElement.RELATION: Relation,
     }
 
     # See at the end of the file for definition of :
@@ -99,11 +100,11 @@ class RelationMemberParser(AbstractXMLParser):
 
 
         # FIXME: factorize ? modify & use transform()
-        if _type == 'node':
+        if _type == OSMElement.NODE :
             parser = NodeParser(self.node)
-        elif _type == 'way':
+        elif _type == OSMElement.WAY:
             parser = WayParser(self.node)
-        elif _type == 'relation':
+        elif _type == OSMElement.RELATION:
             parser = RelationParser(self.node)
         else:
             raise FileFormatError('Unknown member type : "{}"'.format(_type))
@@ -238,9 +239,9 @@ class WayParser(AbstractOSMElementParser):
 
 # Here to avoid cyclic dependecies
 AbstractXMLParser.PARSER_MAP = {
-    'node': NodeParser,
-    'way': WayParser,
-    'relation': RelationParser,
+    OSMElement.NODE: NodeParser,
+    OSMElement.WAY: WayParser,
+    OSMElement.RELATION: RelationParser,
 }
 
 

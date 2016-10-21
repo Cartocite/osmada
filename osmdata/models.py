@@ -11,7 +11,11 @@ class Bounds(models.Model):
 
 
 class OSMElement(models.Model):
-    SUBTYPES = ('node', 'relation', 'way')
+    NODE = 'node'
+    RELATION = 'relation'
+    WAY = 'way'
+
+    SUBTYPES = (NODE, RELATION, WAY)
 
     osmid = models.PositiveIntegerField(null=True)
     version = models.PositiveIntegerField(null=True)
