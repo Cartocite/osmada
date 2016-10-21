@@ -86,3 +86,6 @@ class Action(models.Model):
 class Diff(models.Model):
     actions = models.ManyToManyField(Action)
     import_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return 'Diff #{}'.format(self.pk)
