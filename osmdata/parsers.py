@@ -98,16 +98,8 @@ class RelationMemberParser(AbstractXMLParser):
     def parse(self):
         _type = self.node.attributes['type'].value
 
-
-        # FIXME: factorize ? modify & use transform()
-        if _type == OSMElement.NODE :
-            parser = NodeParser(self.node)
-        elif _type == OSMElement.WAY:
-            parser = WayParser(self.node)
-        elif _type == OSMElement.RELATION:
-            parser = RelationParser(self.node)
-        else:
-            raise FileFormatError('Unknown member type : "{}"'.format(_type))
+        ParserClass = self.get_parser(_type)
+        parser = ParserClass(self.node)
         element = parser.parse()
 
         return RelationMember.objects.create(
