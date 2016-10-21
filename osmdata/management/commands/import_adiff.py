@@ -1,7 +1,6 @@
-from xml.dom.minidom import parse
 from django.core.management.base import BaseCommand, CommandError
 
-from ...parsers import AdiffParser, FileFormatError
+from ...importers import AdiffImporter, ImporterError
 
 DEBUG = True
 
@@ -14,12 +13,10 @@ class Command(BaseCommand):
         parser.add_argument('adiff_path')
 
     def handle(self, adiff_path, *args, **options):
-        dom = parse(adiff_path)
-
         try:
-            diff_parser = AdiffParser(dom.documentElement)
-            diff = diff_parser.parse()
-        except FileFormatError as e:
+            importer = AdiffImporter(adiff_path)
+            diff = importer.run()
+        except ImporterError as e:
             raise CommandError(e)
 
-        print('Created {}'.format(diff))
+        print('Created {} containing {} actions.'.format(diff, diff.actions.count()))
