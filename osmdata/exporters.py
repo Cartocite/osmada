@@ -1,4 +1,6 @@
+import csv
 import datetime
+import io
 
 from django.template.loader import render_to_string
 
@@ -7,7 +9,26 @@ class AbstractExporter:
     pass
 
 class CSVExporter(AbstractExporter):
-    pass
+    def get_header_row(self):
+        return (
+            'id', 'version', 'timestamp', 'changeset',
+            'user', 'uid', 'action_type')
+
+    def get_row(self, action):
+        return (action.new.osmid, action.new.version,
+                action.new.timestamp, action.new.changeset,
+                action.new.user, action.new.uid, action.type)
+
+    def run(self, actions_qs):
+        out = io.StringIO()
+        writer = csv.writer(out)
+
+        writer.writerow(self.get_header_row())
+
+        for action in actions_qs.all():
+            writer.writerow(self.get_row(action))
+
+        return out.getvalue()
 
 
 class AdiffExporter(AbstractExporter):
