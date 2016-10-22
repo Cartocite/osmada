@@ -4,7 +4,13 @@ from django.db import models
 from osmdata.models import Tag, OSMElement
 
 
-class ActionReport():
+class ActionReport:
+    """ Utility class to process some costly analysis on Action instances
+
+    Future evolutions may include storing the output of the analysis (that
+    means turning ActionReport into a Django model) in database, to allow
+    filtering on it.
+    """
     @classmethod
     def create_from_action(cls, action):
         cls.find_main_tag(action)
@@ -33,12 +39,18 @@ class ActionReport():
 
     @classmethod
     def is_tag_action(cls, action):
+        """
+        :type action: Action
+        """
         old = action.old
         new = action.new
         return old.tags_dict() != new.tags_dict()
 
     @classmethod
     def is_geometric_action(cls, action):
+        """
+        :type action: Action
+        """
         action_type = action.new.type()
 
         if action_type == OSMElement.NODE:
@@ -54,6 +66,9 @@ class ActionReport():
 
     @classmethod
     def added_tags(cls, action):
+        """
+        :type action: Action
+        """
         old_tags = action.old.tags_dict()
         new_tags = action.new.tags_dict()
 
@@ -70,6 +85,9 @@ class ActionReport():
 
     @classmethod
     def modified_tags(cls, action):
+        """
+        :type action: Action
+        """
         old_tags = action.old.tags_dict()
 
         old_versions = []
