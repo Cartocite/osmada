@@ -70,6 +70,20 @@ class Tag(models.Model):
                 tag_pattern))
         return _filter
 
+    def match(self, tag_pattern):
+        """ Match according osm tags syntax
+
+        :param tag_pattern: an osm-style tag filter
+        :return: True if the tag matches the spec, False else
+        """
+        filter_spec = self.parse_tag_pattern(tag_pattern)
+
+        for model_field_name, model_field_value in filter_spec.items():
+            if getattr(self, model_field_name) != model_field_value:
+                return False
+
+        return True
+
     def __str__(self):
         return '{}={}'.format(self.k, self.v)
 
