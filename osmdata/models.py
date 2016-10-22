@@ -36,6 +36,15 @@ class OSMElement(models.Model):
                 return i
         raise ValueError('{} must be of one of those subtypes {}'.format(self, self.SUBTYPES))
 
+    def tags_dict(self):
+        """Returns the element tags as a python primitive dict
+
+        Usefull for in-python comparison with another tag list
+
+        :return: a list of key,value couples
+        """
+        return {k: v for k,v in self.tags.values_list('k', 'v')}
+
     def __str__(self):
         return '<{} id="{}">'.format(self.__class__.__name__, self.osmid)
 

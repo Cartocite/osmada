@@ -30,3 +30,39 @@ class ActionReport():
                     return relevant_tags.first()
 
         return None
+
+    @classmethod
+    def is_tag_action(cls, action):
+        old = action.old
+        new = action.new
+        return old.tags_dict() != new.tags_dict()
+
+    @classmethod
+    def added_tags(cls, action):
+        old_tags = action.old.tags_dict()
+        new_tags = action.new.tags_dict()
+
+        return [action.new.tags.get(k=i)
+                for i in new_tags if i not in old_tags]
+
+    @classmethod
+    def removed_tags(cls, action):
+        old_tags = action.old.tags_dict()
+        new_tags = action.new.tags_dict()
+
+        return [action.old.tags.get(k=i)
+                for i in old_tags if i not in new_tags]
+
+    @classmethod
+    def modified_tags(cls, action):
+        old_tags = action.old.tags_dict()
+
+        old_versions = []
+        new_versions = []
+
+        for new_tag in action.new.tags.all():
+            if new_tag.k in old_tags and old_tags[new_tag.k] != new_tag.v:
+                new_versions.append(new_tag)
+                old_versions.append(action.old.tags.get(k=new_tag.k))
+
+        return old_versions, new_versions
