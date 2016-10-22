@@ -103,6 +103,10 @@ class Node(OSMElement):
 class Way(OSMElement):
     nodes = models.ManyToManyField(Node, through='WayNode')
 
+    def nodes_list(self):
+        """ Returns the nodes as a primitive ordered list
+        """
+        return self.nodes.values_list('osmid', 'lat', 'lon')
 
 class WayNode(models.Model):
     way = models.ForeignKey(Way)

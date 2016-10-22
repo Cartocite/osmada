@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 
-from osmdata.models import Tag
+from osmdata.models import Tag, OSMElement
 
 
 class ActionReport():
@@ -36,6 +36,21 @@ class ActionReport():
         old = action.old
         new = action.new
         return old.tags_dict() != new.tags_dict()
+
+    @classmethod
+    def is_geometric_action(cls, action):
+        action_type = action.new.type()
+
+        if action_type == OSMElement.NODE:
+            return (
+                (action.new.node.lat != action.old.node.lat) or
+                (action.new.node.lon != action.old.node.lon))
+
+        elif action_type == OSMElement.WAY:
+            return action.old.way.nodes_list() != action.new.way.nodes_list()
+
+        elif action_type == OSMElement.RELATION:
+            return False # FIXME: According to the meaning of what is a geometric action
 
     @classmethod
     def added_tags(cls, action):

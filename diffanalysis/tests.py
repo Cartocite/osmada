@@ -75,3 +75,15 @@ class ActionReportTest(TestCase):
 
         self.assertEqual(ActionReport.modified_tags(action),
                          ([old_name], [new_name]))
+
+
+class ActionReportGeometricTests(TestCase):
+    fixtures = ['test_geometric_action.json']  # Avenue du président Keneddy
+
+    def test_is_geometric_action(self):
+        relation_action = Action.objects.first()
+        way_action = Action.objects.last()
+
+        self.assertFalse(ActionReport.is_geometric_action(relation_action))
+
+        self.assertTrue(ActionReport.is_geometric_action(way_action))
