@@ -1,8 +1,9 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
-from .models import ActionReport
 from osmdata.models import Action
 
+from .models import ActionReport
+from .exporters import AnalyzedCSVExporter
 
 class ActionReportTest(TestCase):
     fixtures = ['test_filters.json']  # Versailles Chantier
@@ -87,3 +88,22 @@ class ActionReportGeometricTests(TestCase):
         self.assertFalse(ActionReport.is_geometric_action(relation_action))
 
         self.assertTrue(ActionReport.is_geometric_action(way_action))
+
+
+@override_settings(TAGS_IMPORTANCE=['railway=*'])
+class ExporterTests(TestCase):
+    fixtures = ['test_filters.json'] #  Versailles Chantier
+
+    def test_csv_export(self):
+        """Rough test"""
+        exporter = AnalyzedCSVExporter()
+        out = exporter.run(Action.objects)
+
+        header, line1 = out.strip().split('\n')
+
+        self.assertIn(
+            'main_tag,is_geometric_action,is_tag_action,added_tags,removed_tags,modified_tags',
+            header)
+        self.assertIn(
+            '3497428295,6,2016-09-10 14:41:56+00:00,42060502,Eunjeung Yu,4540825,modify,railway=station,False,True,[],[\'name:ko=베르사유 샹티에역\'],"[[], []]"',
+            line1)
