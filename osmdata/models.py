@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import re
+
 from django.db import models
 
 
@@ -41,6 +43,32 @@ class Tag(models.Model):
     element = models.ForeignKey(OSMElement, related_name='tags')
     k = models.CharField(max_length=255)
     v = models.CharField(max_length=255)
+
+
+    RE_TAG_PATTERN = re.compile(r'(?P<key>.+)=(?P<value>.+)')
+
+    @classmethod
+    def parse_tag_pattern(cls, tag_pattern):
+        """ Parse osm tag filter pattern
+
+        tag_pattern examples: "amenity=bench", "highway=*"
+
+        :param tag_pattern: a osm-style tag filter
+        :return: a dict to filter fields on key and optionaly value
+          eg:
+            - {"k": "highway", "v": "primary"}
+            - {"k": "highway"}
+        """
+        m = cls.RE_TAG_PATTERN.match(tag_pattern)
+        if m:
+            key, value = m.group('key'), m.group('value')
+            _filter = {'k': key}
+            if value != '*':
+                _filter['v'] = value
+        else:
+            raise ValueError('Invalid tag pattern : "{}"'.format(
+                tag_pattern))
+        return _filter
 
     def __str__(self):
         return '{}={}'.format(self.k, self.v)

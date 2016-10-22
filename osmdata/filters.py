@@ -1,4 +1,5 @@
-import re
+from osmdata.models import Tag
+
 
 class AbstractActionFilter:
     def __init__(self, *args):
@@ -30,41 +31,18 @@ class IgnoreUsers(AbstractActionFilter):
 
 
 class AbstractTagFilter(AbstractActionFilter):
-    RE_TAG_PATTERN = re.compile(r'(?P<key>.+)=(?P<value>.+)')
-
     def __init__(self, pattern):
         """
-        :param pattern: a sql pattern to match on tag name
+        :param pattern: an osm pattern to match on tag name
         """
-        self.key, self.value = self.split_tag_patterns(pattern)
-
-    @classmethod
-    def split_tag_patterns(cls, osm_pattern):
-        """
-        :param osm_pattern: osm-style patterns like 'amenity=bench' or "highway=*"
-        :return: couple of key and value pattern
-        """
-        m = cls.RE_TAG_PATTERN.match(osm_pattern)
-        if m:
-            key, value = m.group('key'), m.group('value')
-            if value != '*':
-                return key, value
-            else:
-                return key, None
-        else:
-            raise ValueError('Invalid tag pattern : "{}"'.format(
-                osm_pattern))
+        self.filter_spec = {
+            'new__tags__{}'.format(k): v
+            for k, v in Tag.parse_tag_pattern(pattern).items()}
 
 
 class AbstractIgnoreTags(AbstractTagFilter):
     def filter(self, qs):
-        if self.value:
-            return qs.exclude(
-                type=self.ACTION,
-                new__tags__k=self.key,
-                new__tags__v=self.value)
-        else:
-            return qs.exclude(type=self.ACTION, new__tags__k=self.key)
+        return qs.exclude(type=self.ACTION, **self.filter_spec)
 
 
 class IgnoreNewTags(AbstractIgnoreTags):
