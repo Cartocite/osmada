@@ -97,8 +97,8 @@ class Tag(models.Model):
         return '{}={}'.format(self.k, self.v)
 
 class Node(OSMElement):
-    lat = models.FloatField() # FIXME ; could be validated better
-    lon = models.FloatField()
+    lat = models.FloatField(null=True) # FIXME ; could be validated better
+    lon = models.FloatField(null=True)
 
 class Way(OSMElement):
     nodes = models.ManyToManyField(Node, through='WayNode')

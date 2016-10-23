@@ -203,11 +203,19 @@ class NodeParser(AbstractOSMElementParser):
     """
 
     def parse(self):
-        node = Node.objects.create(
-            lat=self.node.attributes['lat'].value,
-            lon=self.node.attributes['lon'].value,
-            **self.get_basic_attributes())
-
+        if self.node.getAttribute('visible') == 'false':
+            # Deleted nodes do no longer have lon/lat
+            lat, lon = None, None
+        else:
+            lat = self.node.attributes['lat'].value
+            lon = self.node.attributes['lon'].value
+        try:
+            node = Node.objects.create(
+                lat=lat,
+                lon=lon,
+                **self.get_basic_attributes())
+        except KeyError:
+            import ipdb;ipdb.set_trace()
         self.parse_tags(node)
         return node
 
