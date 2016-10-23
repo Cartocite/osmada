@@ -42,60 +42,78 @@ class ActionReport:
         """
         :type action: Action
         """
-        old = action.old
-        new = action.new
-        return old.tags_dict() != new.tags_dict()
+
+        if action.type == action.CREATE:
+            return False
+        else:
+            old = action.old
+            new = action.new
+            return old.tags_dict() != new.tags_dict()
 
     @classmethod
     def is_geometric_action(cls, action):
         """
         :type action: Action
         """
-        action_type = action.new.type()
+        element_type = action.new.type()
 
-        if action_type == OSMElement.NODE:
-            return (
-                (action.new.node.lat != action.old.node.lat) or
-                (action.new.node.lon != action.old.node.lon))
+        if action.type in (action.CREATE, action.DELETE):
+            return True
 
-        elif action_type == OSMElement.WAY:
-            return action.old.way.nodes_list() != action.new.way.nodes_list()
+        else:
+            if element_type == OSMElement.NODE:
+                return (
+                    (action.new.node.lat != action.old.node.lat) or
+                    (action.new.node.lon != action.old.node.lon))
 
-        elif action_type == OSMElement.RELATION:
-            return False # FIXME: According to the meaning of what is a geometric action
+            elif element_type == OSMElement.WAY:
+                return action.old.way.nodes_list() != action.new.way.nodes_list()
+
+            elif element_type == OSMElement.RELATION:
+                return False # FIXME: According to the meaning of what is a geometric action
 
     @classmethod
     def added_tags(cls, action):
         """
         :type action: Action
         """
-        old_tags = action.old.tags_dict()
         new_tags = action.new.tags_dict()
 
-        return [action.new.tags.get(k=i)
-                for i in new_tags if i not in old_tags]
+        if action.type == action.CREATE:
+            return list(action.new.tags.all())
+        else:
+            old_tags = action.old.tags_dict()
+
+            return [action.new.tags.get(k=i)
+                    for i in new_tags if i not in old_tags]
 
     @classmethod
     def removed_tags(cls, action):
-        old_tags = action.old.tags_dict()
         new_tags = action.new.tags_dict()
+        if action.type == action.CREATE:
+            return new_tags
+        else:
+            old_tags = action.old.tags_dict()
 
-        return [action.old.tags.get(k=i)
-                for i in old_tags if i not in new_tags]
+            return [action.old.tags.get(k=i)
+                    for i in old_tags if i not in new_tags]
 
     @classmethod
     def modified_tags(cls, action):
         """
         :type action: Action
         """
-        old_tags = action.old.tags_dict()
+        if action.type == action.CREATE:
+            return [], list(action.new.tags.all())
+        else:
+            old_tags = action.old.tags_dict()
 
-        old_versions = []
-        new_versions = []
+            old_versions = []
+            new_versions = []
 
-        for new_tag in action.new.tags.all():
-            if new_tag.k in old_tags and old_tags[new_tag.k] != new_tag.v:
-                new_versions.append(new_tag)
-                old_versions.append(action.old.tags.get(k=new_tag.k))
+            for new_tag in action.new.tags.all():
+                if new_tag.k in old_tags and old_tags[new_tag.k] != new_tag.v:
+                    new_versions.append(new_tag)
+                    old_versions.append(action.old.tags.get(k=new_tag.k))
 
-        return old_versions, new_versions
+            return old_versions, new_versions
