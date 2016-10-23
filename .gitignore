@@ -7,3 +7,4 @@
 .idea
 venv
 db.sqlite3
+cartowatch/local_settings.py

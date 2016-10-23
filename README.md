@@ -87,7 +87,20 @@ want to cleanup all that :
     $ ./manage.py flush
 
 
-Settings
+Configuration
+-------------
+
+Default settings are stored in *cartowatch/settings.py* ; do not edit this
+file.
+
+To start overriding settings :
+
+    $ cp cartowatch/local_settings.py.example cartowatch/local_settings.py
+
+And edit *cartowatch/local_settings.py* to suit your needs ; the example file
+is commented and used to document the setting keys.
+
+Advanced
 --------
 
 `TAGS_IMPORTANCE` Allows to set which tags are the most important to you ; that

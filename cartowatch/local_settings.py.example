@@ -1,0 +1,89 @@
+# TAGS_IMPORTANCE
+#
+# Allows to set which tags are the most important to you in order to select a
+# "main tag" of an action during analysis.
+# First matching tag from TAGS_IMPORTANCE from the list will be elected as main
+# tag.
+#
+TAGS_IMPORTANCE = ['railway=*', 'shop=*']
+
+# TRUSTED_USERS
+#
+# A list of users you blindly trust: their edits do not require review.
+
+# Note that the software itself do not use that variable but it's only used in
+# WORKFLOWS setting from this very file.
+#
+TRUSTED_USERS = ['margaret doe', 'thelma doe', 'steve doe', 'jack doe']
+
+# WORKFLOWS
+#
+# The core setting :workflow definitions, as a dict.
+#
+# Keys of the dict are a name you choose, they are later used to select your
+# workflow you call from CLI (see workflow command)
+#
+# Each value of the dict is a workflow definition with several fields
+#
+# **import**
+# Dotted path to an importer class. Available importers are:
+# - AdiffImporter
+#
+# **export**
+# Dotted path to an exporter class. Available exporters are:
+# - AdiffExporter
+# - CSVExporter
+# - AnalyzedCSVExporter ; it includes more fields requiring some analysis :
+#   - main_tag: (see TAGS_IMPORTANCE)
+#   - added_tags: tags added by action
+#   - removed_tags: tags removed by action
+#   - modified_tags: tags which value was changed by action
+#
+# **filters***
+# A list of couples repsenting filter to run on imported data in order to filter out some actions
+# from the diff.
+# eatch item from `filters` list is a couple:
+#
+# 1. dotted path to a filter class
+# 2. a list of parameters to pass to the filter
+#
+WORKFLOWS = {
+    'sncf_station_simple_csv': {
+        'import': 'osmdata.importers.AdiffImporter',
+        'export' : 'osmdata.exporters.CSVExporter',
+        'filters': [
+            ('osmdata.filters.IgnoreUsers', [TRUSTED_USERS]),
+            ('osmdata.filters.IgnoreNewTags', ['amenity=waterbasket']),
+            ('osmdata.filters.IgnoreChangedTags', ['amenity=waterbasket']),
+            ('osmdata.filters.IgnoreNewTags', ['shop=*']),
+            ('osmdata.filters.IgnoreChangedTags', ['shop=*']),
+        ]
+    },
+    'sncf_station_advanced_csv': {
+        'import': 'osmdata.importers.AdiffImporter',
+        'export' : 'diffanalysis.exporters.AnalyzedCSVExporter',
+        'filters': [
+            ('osmdata.filters.IgnoreUsers', [TRUSTED_USERS]),
+            ('osmdata.filters.IgnoreNewTags', ['amenity=waterbasket']),
+            ('osmdata.filters.IgnoreChangedTags', ['amenity=waterbasket']),
+            ('osmdata.filters.IgnoreNewTags', ['shop=*']),
+            ('osmdata.filters.IgnoreChangedTags', ['shop=*']),
+        ]
+    },
+    'sncf_station_advanced_adiff': {
+        'import': 'osmdata.importers.AdiffImporter',
+        'export' : 'diffanalysis.exporters.AnalyzedCSVExporter',
+        'filters': [
+            ('osmdata.filters.IgnoreUsers', [TRUSTED_USERS]),
+            ('osmdata.filters.IgnoreNewTags', ['amenity=waterbasket']),
+            ('osmdata.filters.IgnoreChangedTags', ['amenity=waterbasket']),
+            ('osmdata.filters.IgnoreNewTags', ['shop=*']),
+            ('osmdata.filters.IgnoreChangedTags', ['shop=*']),
+        ]
+    },
+    'passthrough': {
+        'import': 'osmdata.importers.AdiffImporter',
+        'export' : 'osmdata.exporters.AdiffExporter',
+        'filters': [],
+    }
+}
