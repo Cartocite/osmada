@@ -119,12 +119,28 @@ is commented and used to document the setting keys.
 Advanced
 --------
 
-`TAGS_IMPORTANCE` Allows to set which tags are the most important to you ; that
-may be used to guess a "main tag" to qualify an action.
+### Running unit tests
 
-E.g:
+Hint : run them each time you modify the code, and better: add tests for your
+code.
 
-```
-TAGS_IMPORTANCE = [railway=*', 'indor=area', 'amenity=*', ]
+    $ ./manage.py test
 
-```
+### How long does my workflow takes ?
+
+Use the `time` command to figure out.
+
+    $ time ./manage.py workflow ...
+
+### Use with cron / scripts
+
+To call *manage.py* commands from cron or shell scripts ; you may want to write
+something like:
+
+    /path/to/your/venv/bin/python /path/to/your/manage.py command ...
+
+### What about treating a whole folder of adiff ?
+
+Bash to the rescue (example) :
+
+    $ for f in /home/steve/*.osm; do ./manage.py workflow passthrough "$f" > "/tmp/`basename -s.osm ${f}`.adiff" ; done
