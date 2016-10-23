@@ -4,8 +4,8 @@ from django.utils.module_loading import import_string
 class WorkFlow:
     def __init__(self, name, importer, exporter):
         self.name = name
-        self.importer = importer
-        self.exporter = exporter
+        self.ImporterClass = importer
+        self.ExporterClass = exporter
         self.filters = []
 
     def add_filter(self, _filter):

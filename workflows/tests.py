@@ -19,8 +19,8 @@ class TestWorkFlow(TestCase):
         wf = WorkFlow.from_settings('gare_standard', ok_workflow)
 
         self.assertEqual(wf.name, 'gare_standard')
-        self.assertEqual(wf.importer, AdiffImporter)
-        self.assertEqual(wf.exporter, CSVExporter)
+        self.assertEqual(wf.ImporterClass, AdiffImporter)
+        self.assertEqual(wf.ExporterClass, CSVExporter)
         self.assertEqual(len(wf.filters), 3)
         self.assertIsInstance(wf.filters[0], IgnoreUsers)
         self.assertIsInstance(wf.filters[1], IgnoreNewTags)
