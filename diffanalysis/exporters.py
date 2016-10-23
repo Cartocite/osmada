@@ -24,7 +24,7 @@ class AnalyzedCSVExporter(CSVExporter):
             ActionReport.find_main_tag(action, settings.TAGS_IMPORTANCE),
             ActionReport.is_geometric_action(action),
             ActionReport.is_tag_action(action),
-            self.str_list(ActionReport.removed_tags(action)),
             self.str_list(ActionReport.added_tags(action)),
+            self.str_list(ActionReport.removed_tags(action)),
             [self.str_list(i) for i in ActionReport.modified_tags(action)],
         )
