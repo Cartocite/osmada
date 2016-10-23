@@ -121,3 +121,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+TAGS_IMPORTANCE = ['highway=*', 'railway=*', 'shop=*', 'name=*']
+
+WORKFLOWS = {
+    'passthrough': {
+        'import': 'osmdata.importers.AdiffImporter',
+        'export' : 'osmdata.exporters.AdiffExporter',
+        'filters': [],
+    }
+}
