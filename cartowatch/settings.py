@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'osmdata',
     'diffanalysis',
+    'workflows',
 ]
 
 MIDDLEWARE = [
