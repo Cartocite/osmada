@@ -129,11 +129,15 @@ class RelationMember(models.Model):
 
 
 class Action(models.Model):
+    CREATE = 'create'
+    MODIFY = 'modify'
+    DELETE = 'delete'
+
     type = models.CharField(
         max_length=10, choices=(
-            ('delete', 'delete'),
-            ('modify', 'modify'),
-            ('create', 'create')))
+            (DELETE, DELETE),
+            (MODIFY, MODIFY),
+            (CREATE, CREATE)))
 
     new = models.OneToOneField(OSMElement, related_name='new_for', null=True)
     old = models.OneToOneField(OSMElement, related_name='old_for', null=True)

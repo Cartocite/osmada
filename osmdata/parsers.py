@@ -261,10 +261,10 @@ class ActionParser(AbstractXMLParser):
 
         action_type = self.node.attributes['type'].value
 
-        if action_type == 'create':
+        if action_type == Action.CREATE:
             new = self.transform(getFirstNontextChild(self.node))
 
-        elif action_type in ('modify', 'delete'):
+        elif action_type in (Action.MODIFY, Action.DELETE):
             old_tag, new_tag = self._get_old_new()
             if old_tag:
                 old = self.transform(old_tag)

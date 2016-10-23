@@ -1,4 +1,4 @@
-from osmdata.models import Tag
+from osmdata.models import Action, Tag
 
 
 class AbstractActionFilter:
@@ -48,10 +48,10 @@ class AbstractIgnoreTags(AbstractTagFilter):
 class IgnoreNewTags(AbstractIgnoreTags):
     """ Filter to ignore creation of elements with some tags
     """
-    ACTION = 'create'
+    ACTION = Action.CREATE
 
 
 class IgnoreChangedTags(AbstractIgnoreTags):
     """ Filter to ignore changes on elements with some given tags
     """
-    ACTION = 'modify'
+    ACTION = Action.MODIFY
