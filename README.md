@@ -36,6 +36,22 @@ the venv :
 
     $ source venv/bin/activate
 
+### Commands
+
+*cartowatch* is mainly a CLI tool.
+
+They are defined as django commands ; thus they run as:
+
+    $ ./manage.py <command name>
+
+To get command list:
+
+    $ ./manage.py help
+
+Get help about a specific command:
+
+    $ ./manage.py help <command name>
+
 ### Running workflows
 
 Workflows are the complete transformation process :
