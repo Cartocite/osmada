@@ -22,12 +22,12 @@ class ExporterTests(TestCase):
         exporter = CSVExporter()
         out = exporter.run(Action.objects)
 
-        header, line1 = out.split('\n')
+        header, line1 = out.splitlines()
 
         self.assertEqual(
             header,
             'id,version,timestamp,changeset,user,uid,action_type')
 
         self.assertEqual(
-            header,
+            line1,
             '3497428295,6,2016-09-10 14:41:56+00:00,42060502,Eunjeung Yu,4540825,modify')
