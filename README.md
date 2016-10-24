@@ -10,11 +10,15 @@ The most convenient is to use a Python virtualenv.
 
 eg ; on Debian-like :
 
-    # apt instal python3 python3-virtualenv
+    # apt install python3 python3-virtualenv python-virtualenv
+
+On Ubuntu
+
+    # sudo apt-get install python3 python3-virtualenv python-virtualenv
 
 ### Create the virtualenv
 
-    $ mkvirtualenv --python=/usr/bin/python3 ./venv
+    $ virtualenv --python=/usr/bin/python3 ./venv
 
 
 Once created, you terminal will immediatly enter the virtualenv (notice the
