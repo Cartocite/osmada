@@ -105,5 +105,5 @@ class ExporterTests(TestCase):
             'main_tag,is_geometric_action,is_tag_action,added_tags,removed_tags,modified_tags',
             header)
         self.assertIn(
-            '3497428295,6,2016-09-10 14:41:56+00:00,42060502,Eunjeung Yu,4540825,modify,railway=station,False,True,[\'name:ko=베르사유 샹티에역\'],[],"[[], []]"',
+            'railway=station,False,True,[\'name:ko=베르사유 샹티에역\'],[],"[[], []]"',
             line1)

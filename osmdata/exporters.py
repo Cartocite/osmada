@@ -12,12 +12,13 @@ class CSVExporter(AbstractExporter):
     def get_header_row(self):
         return (
             'id', 'version', 'timestamp', 'changeset',
-            'user', 'uid', 'action_type')
+            'user', 'uid', 'action_type', 'element_type')
 
     def get_row(self, action):
         return (action.new.osmid, action.new.version,
                 action.new.timestamp, action.new.changeset,
-                action.new.user, action.new.uid, action.type)
+                action.new.user, action.new.uid, action.type,
+                action.new.type())
 
     def run(self, actions_qs):
         out = io.StringIO()

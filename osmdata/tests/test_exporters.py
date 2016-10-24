@@ -26,8 +26,8 @@ class ExporterTests(TestCase):
 
         self.assertEqual(
             header,
-            'id,version,timestamp,changeset,user,uid,action_type')
+            'id,version,timestamp,changeset,user,uid,action_type,element_type')
 
         self.assertEqual(
             line1,
-            '3497428295,6,2016-09-10 14:41:56+00:00,42060502,Eunjeung Yu,4540825,modify')
+            '3497428295,6,2016-09-10 14:41:56+00:00,42060502,Eunjeung Yu,4540825,modify,node')
