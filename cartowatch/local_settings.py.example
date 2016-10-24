@@ -72,7 +72,7 @@ WORKFLOWS = {
     },
     'sncf_station_advanced_adiff': {
         'import': 'osmdata.importers.AdiffImporter',
-        'export' : 'diffanalysis.exporters.AnalyzedCSVExporter',
+        'export' : 'osmdata.exporters.AdiffExporter',
         'filters': [
             ('osmdata.filters.IgnoreUsers', [TRUSTED_USERS]),
             ('osmdata.filters.IgnoreNewTags', ['amenity=waterbasket']),
