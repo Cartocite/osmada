@@ -203,12 +203,9 @@ class NodeParser(AbstractOSMElementParser):
     """
 
     def parse(self):
-        if self.node.getAttribute('visible') == 'false':
-            # Deleted nodes do no longer have lon/lat
-            lat, lon = None, None
-        else:
-            lat = self.node.attributes['lat'].value
-            lon = self.node.attributes['lon'].value
+        lat = self.node.getAttribute('lat') or None
+        lon = self.node.getAttribute('lon') or None
+
         try:
             node = Node.objects.create(
                 lat=lat,
