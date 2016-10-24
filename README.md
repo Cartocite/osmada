@@ -26,24 +26,29 @@ On Ubuntu
     $ virtualenv --python=/usr/bin/python3 ./venv
 
 
-Once created, you terminal will immediatly enter the virtualenv (notice the
-`(venv)` at the beggining on your shell prompt.
+### Enter the virtualenv
+
+Be sure to be inside the venv before running any cartowatch command or install
+dependencies. To enter the venv :
+
+    $ source venv/bin/activate
+
+Notice the `(venv)` at the beggining on your shell prompt.
 
 ### Install the dependencies
 
     (venv) $ pip install -r requirements.txt
 
 
+Create the database :
+
+    $ ./manage.py migrate
+
 You're good to go !
 
 
 Using it
 --------
-
-Be sure to be inside the venv before running any cartowatch command. To enter
-the venv :
-
-    $ source venv/bin/activate
 
 ### Commands
 
