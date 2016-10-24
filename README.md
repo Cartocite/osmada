@@ -17,6 +17,11 @@ On Ubuntu
     # sudo apt-get install python3 python3-virtualenv python-virtualenv
 
 ### Create the virtualenv
+On Windows
+
+    $ mkvirtualenv --python=/usr/bin/python3 ./venv
+
+On Ubuntu
 
     $ virtualenv --python=/usr/bin/python3 ./venv
 
