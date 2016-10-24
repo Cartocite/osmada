@@ -1,2 +1,2 @@
 {% extends "osmdata/adiff/abstract_osmelement_detail.xml" %}
-{% block element_attrs %} lat="{{ element.node.lat|floatformat:"7" }}" lon="{{ element.node.lon|floatformat:"7" }}"{% endblock element_attrs %}
+{% block element_attrs %} {% if element.node.lat %}lat="{{ element.node.lat|floatformat:"7" }}"{% endif %} {% if element.node.lon %}lon="{{ element.node.lon|floatformat:"7" }}" {% else %}visible="false"{% endif %}{% endblock element_attrs %}

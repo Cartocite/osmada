@@ -6,21 +6,16 @@
 {% for action in diff.actions.all %}
 
 <action type="{{ action.type }}">
-  {% if action.type == 'modify' %}
+  {% if action.type == 'modify' or action.type == 'delete' %}
   <old>
     {% include "osmdata/adiff/osmelement_detail.xml" with element=action.old %}
   </old>
   {% endif %}
 
-  {% if action.type == 'modify' %}
   <new>
     {% include "osmdata/adiff/osmelement_detail.xml" with element=action.new %}
   </new>
-  {% endif %}
 
-  {% if action.type == 'create' %}
-  {% include "osmdata/adiff/osmelement_detail.xml" with element=action.new %}
-  {% endif %}
 </action>
 {% endfor %}
 </osm>
