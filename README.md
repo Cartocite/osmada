@@ -10,7 +10,7 @@ The most convenient is to use a Python virtualenv.
 
 eg ; on Debian-like :
 
-    # apt install python3 python3-virtualenv python-virtualenv
+    # apt install python3 virtualenv
 
 On Ubuntu
 
