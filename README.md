@@ -14,7 +14,7 @@ eg ; on Debian-like :
 
 On Ubuntu
 
-    # sudo apt-get install python3 python3-virtualenv python-virtualenv
+    # sudo apt-get install python3 virtualenv
 
 ### Create the virtualenv
 On Windows
