@@ -1,5 +1,5 @@
-Cartowatch − Watch OpenStreetMap edits
-======================================
+Osmada − OpenStreetMap Adiff Analyzer
+=====================================
 
 Installing
 ----------
@@ -28,7 +28,7 @@ On Ubuntu
 
 ### Enter the virtualenv
 
-Be sure to be inside the venv before running any cartowatch command or install
+Be sure to be inside the venv before running any osmada command or install
 dependencies. To enter the venv :
 
     $ source venv/bin/activate
@@ -52,7 +52,7 @@ Using it
 
 ### Commands
 
-*cartowatch* is mainly a CLI tool.
+*osmada* is mainly a CLI tool.
 
 They are defined as django commands ; thus they run as:
 
@@ -120,14 +120,14 @@ want to cleanup all that :
 Configuration
 -------------
 
-Default settings are stored in *cartowatch/settings.py* ; do not edit this
+Default settings are stored in *osmada/settings.py* ; do not edit this
 file.
 
 To start overriding settings :
 
-    $ cp cartowatch/local_settings.py.example cartowatch/local_settings.py
+    $ cp osmada/local_settings.py.example osmada/local_settings.py
 
-And edit *cartowatch/local_settings.py* to suit your needs ; the example file
+And edit *osmada/local_settings.py* to suit your needs ; the example file
 is commented and used to document the setting keys.
 
 Advanced

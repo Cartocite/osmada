@@ -7,4 +7,4 @@
 .idea
 venv
 db.sqlite3
-cartowatch/local_settings.py
+osmada/local_settings.py
