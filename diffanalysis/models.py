@@ -87,7 +87,7 @@ class ActionReport:
     def removed_tags(cls, action):
         new_tags = action.new.tags_dict()
         if action.type == action.CREATE:
-            return new_tags
+            return []
         else:
             old_tags = action.old.tags_dict()
 
