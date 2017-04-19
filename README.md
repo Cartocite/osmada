@@ -138,7 +138,7 @@ Advanced
 Hint : run them each time you modify the code, and better: add tests for your
 code.
 
-    $ ./manage.py test
+    $ ./manage.py test --settings=osmada.base_settings
 
 ### How long does my workflow takes ?
 
