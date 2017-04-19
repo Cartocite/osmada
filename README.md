@@ -1,6 +1,8 @@
 Osmada − OpenStreetMap Adiff Analyzer
 =====================================
 
+[![Build Status](https://travis-ci.org/Cartocite/osmada.svg?branch=master)](https://travis-ci.org/Cartocite/osmada)
+
 Installing
 ----------
 
