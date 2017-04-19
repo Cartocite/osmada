@@ -90,16 +90,11 @@ class WorkFlow:
         except KeyError:
             raise ValueError(
                 '"import" and "export" keys are required in workflow spec.')
-        except ImportError:
-            raise
 
         workflow = cls(name, ImporterClass, ExporterClass)
 
         for klass_path, args in spec.get('filters', []):
-            try:
-                Klass = import_string(klass_path)
-            except ImportError:
-                raise
+            Klass = import_string(klass_path)
             workflow.add_filter(Klass(*args))
 
         return workflow

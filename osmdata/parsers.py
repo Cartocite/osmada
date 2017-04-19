@@ -193,13 +193,10 @@ class NodeParser(AbstractOSMElementParser):
         lat = self.node.getAttribute('lat') or None
         lon = self.node.getAttribute('lon') or None
 
-        try:
-            node = Node.objects.create(
-                lat=lat,
-                lon=lon,
-                **self.get_basic_attributes())
-        except KeyError:
-            import ipdb;ipdb.set_trace()
+        node = Node.objects.create(
+            lat=lat,
+            lon=lon,
+            **self.get_basic_attributes())
         self.parse_tags(node)
         return node
 
