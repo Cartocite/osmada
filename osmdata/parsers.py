@@ -31,13 +31,6 @@ def getFirstNontextChild(element):
 class AbstractXMLParser:
     """ Base class for Adiff XML node parsers
     """
-
-    ELEMENT_TYPES = {
-        OSMElement.NODE: Node,
-        OSMElement.WAY: Way,
-        OSMElement.RELATION: Relation,
-    }
-
     # See at the end of the file for definition of :
     # PARSER_MAP = {...}
 
@@ -55,12 +48,6 @@ class AbstractXMLParser:
             raise FileFormatError(
                 'Unknown member type : "{}"'.format(str_name))
         return klass
-
-    @classmethod
-    def get_model(cls, str_name):
-        """ Given a str name, returns the matching model
-        """
-        return cls._dict_fetch(cls.ELEMENT_TYPES, str_name)
 
     @classmethod
     def get_parser(cls, str_name):

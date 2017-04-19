@@ -12,10 +12,6 @@ class ActionReport:
     filtering on it.
     """
     @classmethod
-    def create_from_action(cls, action):
-        cls.find_main_tag(action)
-
-    @classmethod
     def find_main_tag(cls, action, tags_importance):
         """
         :type action: Action
