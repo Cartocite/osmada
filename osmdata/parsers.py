@@ -234,7 +234,7 @@ class ActionParser(AbstractXMLParser):
             try:
                 tag = self.node.getElementsByTagName(i)[0]
             except IndexError:
-                tag = None  # case where there is no « old » (creation)
+                raise FileFormatError('There must be a {} tag'.format(i))
             yield getFirstNontextChild(tag)
 
     def parse(self):
