@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="Overpass API">
+<note>The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.</note>
+<meta osm_base="2016-10-12T21:25:02Z"/>
+<action type="delete">
+<old>
+  <node id="2865131422" lat="48.8309077" lon="1.9601857" version="2" timestamp="2016-05-01T12:33:49Z" changeset="39015860" uid="167573" user="mygeomatic"/>
+</old>
+<new>
+  <node id="2865131422" visible="false" version="3" timestamp="2016-09-05T17:29:49Z" changeset="41936595" uid="1136564" user="cafecho"/>
+</new>
+</action>
+</osm>

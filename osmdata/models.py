@@ -48,11 +48,11 @@ class OSMElement(models.Model):
     def __str__(self):
         return '<{} id="{}">'.format(self.__class__.__name__, self.osmid)
 
+
 class Tag(models.Model):
     element = models.ForeignKey(OSMElement, related_name='tags')
     k = models.CharField(max_length=255)
     v = models.CharField(max_length=255)
-
 
     RE_TAG_PATTERN = re.compile(r'(?P<key>.+)=(?P<value>.+)')
 

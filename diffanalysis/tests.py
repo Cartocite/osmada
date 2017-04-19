@@ -6,7 +6,7 @@ from .models import ActionReport
 from .exporters import AnalyzedCSVExporter
 
 class ActionReportTest(TestCase):
-    fixtures = ['test_filters.json']  # Versailles Chantier
+    fixtures = ['test_filters.json', 'test_filters_2.json']
 
     def test_find_main_tag(self):
         action = Action.objects.first()
@@ -40,14 +40,18 @@ class ActionReportTest(TestCase):
             operator_sncf)
 
     def test_is_tag_action(self):
-        action = Action.objects.first()
+        modify_tag_action = Action.objects.filter(type="modify").first()
 
-        self.assertTrue(ActionReport.is_tag_action(action))
-        action.new.tags.get(k='name:ko').delete()
-        self.assertFalse(ActionReport.is_tag_action(action))
+        self.assertTrue(ActionReport.is_tag_action(modify_tag_action))
 
-    def test_added_tags(self):
-        action = Action.objects.first()
+        modify_tag_action.new.tags.get(k='name:ko').delete()  # Remove the only tag modification
+        self.assertFalse(ActionReport.is_tag_action(modify_tag_action))
+
+        create_action = Action.objects.filter(type="create").first()
+        self.assertFalse(ActionReport.is_tag_action(create_action))
+
+    def test_modify_action_added_tags(self):
+        action = Action.objects.filter(type="modify").first()
         name_ko = action.new.tags.get(k='name:ko')
 
         self.assertEqual(ActionReport.added_tags(action), [name_ko])
@@ -55,8 +59,12 @@ class ActionReportTest(TestCase):
         name_ko.delete()
         self.assertEqual(ActionReport.added_tags(action), [])
 
+    def test_create_action_added_tags(self):
+        action = Action.objects.filter(type="create").first()
 
-    def test_removed_tags(self):
+        self.assertEqual(len(ActionReport.added_tags(action)), 2)
+
+    def test_modify_action_removed_tags(self):
         action = Action.objects.first()
         self.assertEqual(ActionReport.removed_tags(action), [])
         action.new.tags.get(k='name').delete()
@@ -64,8 +72,11 @@ class ActionReportTest(TestCase):
 
         self.assertEqual(ActionReport.removed_tags(action), [old_name])
 
+    def test_create_action_removed_tags(self):
+        action = Action.objects.filter(type='create').first()
+        self.assertEqual(ActionReport.removed_tags(action), [])
 
-    def test_modified_tags(self):
+    def test_modify_action_modified_tags(self):
         action = Action.objects.first()
         self.assertEqual(ActionReport.modified_tags(action), ([], []))
 
@@ -77,17 +88,26 @@ class ActionReportTest(TestCase):
         self.assertEqual(ActionReport.modified_tags(action),
                          ([old_name], [new_name]))
 
+    def test_create_action_modified_tags(self):
+        action = Action.objects.filter(type='create').first()
+
+        self.assertEqual(ActionReport.modified_tags(action), ([], list(action.new.tags.all())))
+
 
 class ActionReportGeometricTests(TestCase):
     fixtures = ['test_geometric_action.json']  # Avenue du président Keneddy
 
     def test_is_geometric_action(self):
-        relation_action = Action.objects.first()
-        way_action = Action.objects.last()
+        relation_modify_action = Action.objects.get(pk=43)
+        way_modify_action = Action.objects.get(pk=44)
 
-        self.assertFalse(ActionReport.is_geometric_action(relation_action))
+        way_create_action = Action.objects.get(pk=30)
 
-        self.assertTrue(ActionReport.is_geometric_action(way_action))
+        self.assertFalse(ActionReport.is_geometric_action(relation_modify_action))
+
+        self.assertTrue(ActionReport.is_geometric_action(way_modify_action))
+
+        self.assertTrue(ActionReport.is_geometric_action(way_create_action))
 
 
 @override_settings(TAGS_IMPORTANCE=['railway=*'])

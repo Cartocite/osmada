@@ -9504,6 +9504,19 @@
   }
 },
 {
+  "model": "osmdata.osmelement",
+  "pk": 5639,
+  "fields": {
+    "osmid": 444967525,
+    "version": 1,
+    "timestamp": "2016-09-29T20:39:04Z",
+    "uid": 677099,
+    "user": "Yann_L",
+    "changeset": 42528786,
+    "bounds": null
+  }
+},
+{
   "model": "osmdata.tag",
   "pk": 602,
   "fields": {
@@ -15417,6 +15430,11 @@
 {
   "model": "osmdata.way",
   "pk": 10048,
+  "fields": {}
+},
+{
+  "model": "osmdata.way",
+  "pk": 5639,
   "fields": {}
 },
 {
@@ -22168,13 +22186,23 @@
   }
 },
 {
+  "model": "osmdata.action",
+  "pk": 30,
+  "fields": {
+    "type": "create",
+    "new": 5639,
+    "old": null
+  }
+},
+{
   "model": "osmdata.diff",
   "pk": 8,
   "fields": {
     "import_date": "2016-10-22T14:36:56.809Z",
     "actions": [
       43,
-      44
+      44,
+      30
     ]
   }
 }

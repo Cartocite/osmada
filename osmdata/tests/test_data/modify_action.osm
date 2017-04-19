@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="Overpass API">
+<note>The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.</note>
+<meta osm_base="2016-10-12T19:39:02Z"/>
+
+<action type="modify">
+<old>
+  <node id="3497428295" lat="48.7954702" lon="2.1355157" version="5" timestamp="2016-04-14T08:35:18Z" changeset="38549564" uid="125897" user="overflorian">
+    <tag k="name" v="Versailles Chantiers"/>
+  </node>
+</old>
+<new>
+  <node id="3497428295" lat="48.7954702" lon="2.1355157" version="6" timestamp="2016-09-10T14:41:56Z" changeset="42060502" uid="4540825" user="Eunjeung Yu">
+    <tag k="name" v="Versailles Chantiers"/>
+    <tag k="wikipedia" v="fr:Gare de Versailles-Chantiers"/>
+  </node>
+</new>
+</action>
+
+</osm>
