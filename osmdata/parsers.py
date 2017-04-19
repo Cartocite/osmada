@@ -84,7 +84,7 @@ class AbstractXMLParser:
 
         :rtype: a OSMElement or a list of OSMElement
         """
-        raise NotImplemented
+        raise NotImplemented  # pragma: no cover
 
 
 class RelationMemberParser(AbstractXMLParser):

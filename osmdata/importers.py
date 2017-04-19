@@ -5,7 +5,7 @@ from .parsers import AdiffParser, FileFormatError
 class ImporterError(Exception):
     pass
 
-class AbstractImporter:
+class AbstractImporter:  # pragma: no cover
     def __init__(self, path):
         """
         :param path: a path to fetch the resource (URL, file path…)

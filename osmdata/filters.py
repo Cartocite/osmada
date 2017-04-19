@@ -1,7 +1,7 @@
 from osmdata.models import Action, Tag
 
 
-class AbstractActionFilter:
+class AbstractActionFilter:  # pragma: no cover
     def __init__(self, *args):
         """Initialization receives and stores arguments from settings
         """

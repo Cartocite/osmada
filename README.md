@@ -138,7 +138,18 @@ Advanced
 Hint : run them each time you modify the code, and better: add tests for your
 code.
 
+Initial setup:
+
+    $ pip install -r test-requirements.txt
+
+Run tests:
+
     $ ./manage.py test --settings=osmada.base_settings
+
+See coverage:
+
+    $ coverage run manage.py test --settings=osmada.base_settings
+    $ coverage report
 
 ### How long does my workflow takes ?
 
