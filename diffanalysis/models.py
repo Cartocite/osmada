@@ -24,7 +24,7 @@ class ActionReport:
         # FIXME: could be optimised with a SQL ORDER BY CASE...
 
         # We try first the new tags and then the old tags
-        for taglist in new_tags, old_tags:
+        for taglist in old_tags, new_tags:
             for tag_pattern in tags_importance:
                 relevant_tags = taglist.filter(
                     **Tag.parse_tag_pattern(tag_pattern))

@@ -10,8 +10,8 @@ class ActionReportTest(TestCase):
 
     def test_find_main_tag(self):
         action = Action.objects.first()
-        operator_sncf = action.new.tags.get(k="operator", v="SNCF")
-        railway_station = action.new.tags.get(k="railway", v="station")
+        operator_sncf = action.old.tags.get(k="operator", v="SNCF")
+        railway_station = action.old.tags.get(k="railway", v="station")
 
         self.assertEqual(
             ActionReport.find_main_tag(action, ['operator=SNCF']),
