@@ -21,7 +21,7 @@ class AnalyzedCSVExporter(CSVExporter):
 
     def get_row(self, action):
         return super().get_row(action) + (
-            ActionReport.find_main_tag(action, settings.TAGS_IMPORTANCE),
+            ActionReport.find_main_tags(action, settings.TAGS_IMPORTANCE),
             ActionReport.is_geometric_action(action),
             ActionReport.is_tag_action(action),
             self.str_list(ActionReport.added_tags(action)),

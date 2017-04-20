@@ -57,6 +57,15 @@ class Tag(models.Model):
     RE_TAG_PATTERN = re.compile(r'(?P<key>.+)=(?P<value>.+)')
 
     @classmethod
+    def split_tag_pattern(cls, multi_tag_pattern):
+        """
+        :param multiple tag_pattern: a comma-separated tag patterns
+          ex: foo=bar,spam=*
+        :return a list of strings containing each one part of the pattern.
+        """
+        return multi_tag_pattern.split(',')
+
+    @classmethod
     def parse_tag_pattern(cls, tag_pattern):
         """ Parse osm tag filter pattern
 

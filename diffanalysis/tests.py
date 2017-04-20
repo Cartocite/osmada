@@ -8,7 +8,7 @@ from .exporters import AnalyzedCSVExporter
 class ActionReportTest(TestCase):
     fixtures = ['test_filters.json', 'test_filters_2.json']
 
-    def test_find_main_tag(self):
+    def test_find_single_main_tag(self):
         action = Action.objects.first()
 
         self.assertEqual(
@@ -36,6 +36,22 @@ class ActionReportTest(TestCase):
             ActionReport.find_main_tags(
                 action, ['operator=*', 'railway=station']),
             'operator=SNCF')
+
+    def test_find_multirule_main_tag(self):
+        action = Action.objects.first()
+
+        self.assertEqual(
+            ActionReport.find_main_tags(action, ['operator=SNCF,foo=bar']),
+            None)
+
+        self.assertEqual(
+            ActionReport.find_main_tags(action, ['operator=SNCF,railway=*']),
+            'operator=SNCF,railway=station')
+
+        self.assertEqual(
+            ActionReport.find_main_tags(action, ['railway=*,operator=SNCF']),
+            'operator=SNCF,railway=station')
+
 
     def test_is_tag_action(self):
         modify_tag_action = Action.objects.filter(type="modify").first()

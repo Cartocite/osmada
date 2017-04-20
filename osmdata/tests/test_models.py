@@ -27,6 +27,10 @@ class TestTag(TestCase):
         with self.assertRaises(ValueError):
             Tag.parse_tag_pattern('trucmuche')
 
+    def test_split_tag_pattern(self):
+        self.assertEqual(Tag.split_tag_pattern('foo=bar'), ['foo=bar'])
+        self.assertEqual(Tag.split_tag_pattern('foo=bar,zoom=*'), ['foo=bar', 'zoom=*'])
+
 
 class TestOSMElement(TestCase):
     def setUp(self):

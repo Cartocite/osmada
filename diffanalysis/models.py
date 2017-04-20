@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 
 from osmdata.models import Tag, OSMElement
 
@@ -12,7 +13,7 @@ class ActionReport:
     filtering on it.
     """
     @classmethod
-    def find_main_tag(cls, action, tags_importance):
+    def find_main_tags(cls, action, tag_importance):
         """
         :type action: Action
         :param tags_importance: ordered list giving tag patterns giving
@@ -25,15 +26,24 @@ class ActionReport:
         new_tags = Tag.objects.filter(element=action.new)
         old_tags = Tag.objects.filter(element=action.old)
 
-        # FIXME: could be optimised with a SQL ORDER BY CASE...
-
         # We try first the new tags and then the old tags
         for taglist in old_tags, new_tags:
-            for tag_pattern in tags_importance:
-                relevant_tags = taglist.filter(
-                    **Tag.parse_tag_pattern(tag_pattern))
-                if relevant_tags.exists():
-                    return str(relevant_tags.first())
+            for tag_pattern in tag_importance:
+                tag_pattern_rules = Tag.split_tag_pattern(tag_pattern)
+
+                 # first rule as a basis
+                full_filter = Q(**Tag.parse_tag_pattern(tag_pattern_rules[0]))
+
+                # OR-add the other
+                for rule in tag_pattern_rules[1:]:
+                    full_filter = full_filter | Q(**Tag.parse_tag_pattern(rule))
+
+                #import ipdb;ipdb.set_trace()
+                relevant_tags = taglist.filter(full_filter)
+                # If all pattern rules got matched
+                if relevant_tags.count() >= len(tag_pattern_rules):
+                    # Order by key to have deterministic tags order in the tag pattern
+                    return ','.join([str(t) for t in relevant_tags.order_by('k')])
 
         return None
 
