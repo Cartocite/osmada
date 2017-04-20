@@ -10,34 +10,32 @@ class ActionReportTest(TestCase):
 
     def test_find_main_tag(self):
         action = Action.objects.first()
-        operator_sncf = action.old.tags.get(k="operator", v="SNCF")
-        railway_station = action.old.tags.get(k="railway", v="station")
 
         self.assertEqual(
-            ActionReport.find_main_tag(action, ['operator=SNCF']),
-            operator_sncf)
+            ActionReport.find_main_tags(action, ['operator=SNCF']),
+            'operator=SNCF')
 
         self.assertEqual(
-            ActionReport.find_main_tag(action, ['operator=*']),
-            operator_sncf)
+            ActionReport.find_main_tags(action, ['operator=*']),
+            'operator=SNCF')
 
         self.assertEqual(
-            ActionReport.find_main_tag(action, ['foo=bar']),
+            ActionReport.find_main_tags(action, ['foo=bar']),
             None)
 
         self.assertEqual(
-            ActionReport.find_main_tag(action, []),
+            ActionReport.find_main_tags(action, []),
             None)
 
         self.assertEqual(
-            ActionReport.find_main_tag(
+            ActionReport.find_main_tags(
                 action, ['railway=station', 'operator=*']),
-            railway_station)
+            'railway=station')
 
         self.assertEqual(
-            ActionReport.find_main_tag(
+            ActionReport.find_main_tags(
                 action, ['operator=*', 'railway=station']),
-            operator_sncf)
+            'operator=SNCF')
 
     def test_is_tag_action(self):
         modify_tag_action = Action.objects.filter(type="modify").first()

@@ -15,8 +15,12 @@ class ActionReport:
     def find_main_tag(cls, action, tags_importance):
         """
         :type action: Action
-        :param tags_importance: ordered list giving tags precedence for (most
-          important first)
+        :param tags_importance: ordered list giving tag patterns giving
+           precedence for (most important first). Each pattern can be a
+           compound form.
+           ex: ``["railway=station,operator=SNCF", man_made=tower]``.
+        :return: the main tag (tag pattern of the list which won), or None
+        :rtype str:
         """
         new_tags = Tag.objects.filter(element=action.new)
         old_tags = Tag.objects.filter(element=action.old)
@@ -29,7 +33,7 @@ class ActionReport:
                 relevant_tags = taglist.filter(
                     **Tag.parse_tag_pattern(tag_pattern))
                 if relevant_tags.exists():
-                    return relevant_tags.first()
+                    return str(relevant_tags.first())
 
         return None
 
