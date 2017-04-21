@@ -1,6 +1,6 @@
 <{{ element.type }} id="{{ element.osmid }}"
   {% block element_attrs %}{% endblock %}
-  version="{{ element.version }}" timestamp="{{ element.timestamp|date:'Y-m-d\TH:i:s' }}Z" changeset="{{ element.changeset }}" uid="{{ element.uid }}" user="{{ element.user }}">
+  version="{{ element.version }}" timestamp="{{ element.timestamp|date:'Y-m-d\TH:i:s' }}Z" changeset="{{ element.changeset }}" uid="{{ element.uid }}" user="{{ element.user }}" visible="{{ element.visible|lowercase }}">
 {% if element.bounds %}
 <bounds minlat="{{ element.bounds.minlat|floatformat:'7'}}" minlon="{{ element.bounds.minlon|floatformat:'7'}}"
         maxlat="{{ element.bounds.maxlat|floatformat:'7'}}" maxlon="{{ element.bounds.maxlon|floatformat:'7'}}"/>

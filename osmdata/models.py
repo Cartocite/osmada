@@ -26,6 +26,7 @@ class OSMElement(models.Model):
     user = models.CharField(blank=True, max_length=255)
     changeset = models.PositiveIntegerField(null=True)
     bounds = models.OneToOneField(Bounds, null=True)
+    visible = models.BooleanField(default=True)
 
     def specialized(self):
         return getattr(self, self.type())
