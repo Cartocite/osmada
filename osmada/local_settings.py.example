@@ -3,9 +3,9 @@
 # Allows to set which tags are the most important to you in order to select a
 # "main tag" of an action during analysis.
 # First matching tag from TAGS_IMPORTANCE from the list will be elected as main
-# tag.
+# tag. Note that you can use a multi-criteria filter (see example).
 #
-TAGS_IMPORTANCE = ['railway=*', 'shop=*']
+TAGS_IMPORTANCE = ['railway=*,operator=SNCF', 'shop=*']
 
 # TRUSTED_USERS
 #
