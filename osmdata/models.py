@@ -142,9 +142,11 @@ class Action(models.Model):
     CREATE = 'create'
     MODIFY = 'modify'
     DELETE = 'delete'
+    REMOVE = 'remove'
 
     type = models.CharField(
         max_length=10, choices=(
+            (REMOVE, REMOVE),
             (DELETE, DELETE),
             (MODIFY, MODIFY),
             (CREATE, CREATE)))

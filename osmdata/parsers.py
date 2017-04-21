@@ -160,9 +160,11 @@ class AbstractOSMElementParser(AbstractXMLParser):
             attrs['osmid'] = self.node.attributes[osmid_key].value
 
         # Handle optional attrs
-        for i in ('version', 'uid', 'user', 'changeset'):
+        for i in ('version', 'uid', 'user', 'changeset', 'visible'):
             if i in self.node.attributes:
                 attrs[i] = self.node.attributes[i].value
+                if i == 'visible': # boolean
+                    attrs[i] = True if (attrs[i] == 'true') else False
 
         if 'timestamp' in self.node.attributes:
             attrs['timestamp'] = parse_iso8601(self.node.attributes['timestamp'].value)
@@ -252,6 +254,11 @@ class ActionParser(AbstractXMLParser):
 
             if new_tag:
                 new = self.transform(new_tag)
+                # removal from a relation, adiff mark them as "delete" also. Only
+                # difference in adiff, is that the <new> osm element has visible=true for a
+                # remove and visible=false for a delete.
+                if action_type == Action.DELETE and new.visible:
+                    action_type = Action.REMOVE
         else:
             raise FileFormatError("{} is an unknown action type".format(
                 action_type))

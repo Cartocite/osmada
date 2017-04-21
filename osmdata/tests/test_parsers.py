@@ -183,6 +183,17 @@ class ActionParserTest(TestCase):
         self.assertIsInstance(action.new, Node)
         self.assertIsInstance(action.old, Node)
 
+    def test_remove_action_parser(self):
+        # remove is marked as "delete" in adiff, only difference is
+        # visible=true on the new tag.
+        test_data = parse_test_data('remove_action.osm')
+        action_node = test_data.getElementsByTagName('action')[0]
+
+        parser = ActionParser(action_node)
+        action = parser.parse()
+        self.assertIsInstance(action, Action)
+        self.assertEqual(action.type, Action.REMOVE)
+
     def test_invalid_action_parser(self):
         test_data = parse_test_data('invalid_action.osm')
         action_node = test_data.getElementsByTagName('action')[0]
