@@ -132,6 +132,27 @@ To start overriding settings :
 And edit *osmada/local_settings.py* to suit your needs ; the example file
 is commented and used to document the setting keys.
 
+
+Upgrade to the latest version
+------------------------------
+
+Be sure to have the venv activated.
+
+Pull latest code from git:
+
+    $ git pull
+
+Install latest requirements:
+
+    $ pip install -r requirements.txt
+
+Apply latest database migrations:
+
+    $ ./manage.py migrate
+
+You're good to go :-)
+
+
 Advanced
 --------
 
