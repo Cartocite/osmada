@@ -9,7 +9,8 @@
     "uid": 125897,
     "user": "overflorian",
     "changeset": 38549564,
-    "bounds": null
+    "bounds": null,
+    "visible": true
   }
 },
 {
@@ -22,7 +23,8 @@
     "uid": 4540825,
     "user": "Eunjeung Yu",
     "changeset": 42060502,
-    "bounds": null
+    "bounds": null,
+    "visible": true
   }
 },
 {
