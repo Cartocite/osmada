@@ -9,3 +9,4 @@ venv
 db.sqlite3
 osmada/local_settings.py
 .coverage
+osmada/settings.d/*

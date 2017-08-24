@@ -132,6 +132,31 @@ To start overriding settings :
 And edit *osmada/local_settings.py* to suit your needs ; the example file
 is commented and used to document the setting keys.
 
+### Storing lists in separate files
+
+Some settings, such as `TRUSTED_USERS` are lists. You may want to store them
+into flat files (one value/line) within *osmada/settings.d* folder.
+
+Here is an example with `TRUSTED_USERS` defined in a flat file.
+
+1. Create the *osmada/settings.d/trusted_users.list* file containing one value
+   per line (empty lines are ignored) e.g:
+   ```
+   margaret doe
+   thelma doe
+   john doe
+   jack doe
+   ```
+
+1. Add this line (once) at the beggining of your *local_settings.py*:
+    ```
+    from .utils import flat_file_list
+    ```
+
+2. Reference  the flat file from your *local_settings.py*
+    ```
+    TRUSTED_USERS = flat_file_list('settings.d/trusted_users.list')
+    ```
 
 Upgrade to the latest version
 ------------------------------
