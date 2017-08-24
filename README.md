@@ -12,11 +12,8 @@ The most convenient is to use a Python virtualenv.
 
 eg ; on Debian-like :
 
-    # apt install python3 virtualenv
-
-On Ubuntu
-
-    # sudo apt-get install python3 virtualenv
+    $ sudo apt install python3 virtualenv \
+      spatialite-bin libsqlite3-mod-spatialite libproj-dev gdal-bin
 
 ### Create the virtualenv
 On Windows
@@ -176,6 +173,10 @@ Apply latest database migrations:
     $ ./manage.py migrate
 
 You're good to go :-)
+
+additionaly, dependencies may have evolved after update, so if something yells,
+you may want to do *apt* and *pip* steps from [Installing section](#installing)
+again.
 
 
 Advanced

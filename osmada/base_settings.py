@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'osmdata',
     'diffanalysis',
     'workflows',
@@ -76,9 +77,13 @@ WSGI_APPLICATION = 'osmada.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
+# Travis uses trusty which have no mod_spatialite
+if not os.environ.get('TRAVIS'):
+    SPATIALITE_LIBRARY_PATH = 'mod_spatialite'
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.contrib.gis.db.backends.spatialite',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'TEST': {
             # Use relative name for testing db, pytest fails otherwise
