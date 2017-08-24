@@ -58,6 +58,12 @@ class TestOSMElement(TestCase):
         way = Way.objects.create(osmid="1234")
         self.assertEqual(str(way), '<Way id="1234">')
 
+    def test_node_geodb(self):
+        n = Node.objects.create(lat=48.8403,lon=1.9391)
+        self.assertEqual(int(n.latlon.x), 215859)
+        self.assertEqual(int(n.latlon.y), 6247806)
+
+
 
 class DiffTest(TestCase):
     def test_str(self):

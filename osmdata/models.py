@@ -2,7 +2,9 @@ from __future__ import unicode_literals
 
 import re
 
-from django.db import models
+from django.contrib.gis.db import models
+
+from .geo_utils import planify_coords
 
 
 class Bounds(models.Model):
@@ -25,7 +27,7 @@ class OSMElement(models.Model):
     uid = models.PositiveIntegerField(null=True)
     user = models.CharField(blank=True, max_length=255)
     changeset = models.PositiveIntegerField(null=True)
-    bounds = models.OneToOneField(Bounds, null=True)
+    bounds = models.OneToOneField(Bounds, null=True, blank=True)
     visible = models.BooleanField(default=True)
 
     def specialized(self):
@@ -109,6 +111,13 @@ class Tag(models.Model):
 class Node(OSMElement):
     lat = models.FloatField(null=True) # FIXME ; could be validated better
     lon = models.FloatField(null=True)
+    # projected coordinates. Otherwise, spatialite is not able to make distance math
+    latlon = models.PointField(srid=3857, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.latlon = planify_coords(self.lat, self.lon)
+        return super().save(*args, **kwargs)
+
 
 class Way(OSMElement):
     nodes = models.ManyToManyField(Node, through='WayNode')
