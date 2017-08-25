@@ -5,6 +5,7 @@
 /static
 /media
 .idea
+.cache
 venv
 db.sqlite3
 osmada/local_settings.py
