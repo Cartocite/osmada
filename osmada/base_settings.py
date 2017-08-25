@@ -80,6 +80,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'TEST': {
+            # Use relative name for testing db, pytest fails otherwise
+            'NAME': 'testdb.sqlite3',
+        }
     }
 }
 
