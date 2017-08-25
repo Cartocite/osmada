@@ -192,7 +192,7 @@ Initial setup:
 
 Run tests:
 
-    $ ./manage.py test --settings=osmada.base_settings
+    $ pytest
 
 See coverage:
 
