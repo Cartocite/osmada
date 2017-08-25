@@ -115,7 +115,8 @@ class Node(OSMElement):
     latlon = models.PointField(srid=3857, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        self.latlon = planify_coords(self.lat, self.lon)
+        if self.lat and self.lon:
+            self.latlon = planify_coords(float(self.lat), float(self.lon))
         return super().save(*args, **kwargs)
 
 
