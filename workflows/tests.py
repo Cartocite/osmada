@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 import osmdata
-from osmdata.filters import IgnoreUsers, IgnoreNewTags, IgnoreChangedTags, AbstractActionFilter
+from osmdata.filters import IgnoreUsers, IgnoreElementsCreation, IgnoreElementsModification, AbstractActionFilter
 from osmdata.importers import AdiffImporter
 from osmdata.exporters import CSVExporter
 from osmdata.models import Diff
@@ -18,8 +18,8 @@ class TestWorkFlow(TestCase):
                 'export' : 'osmdata.exporters.CSVExporter',
                 'filters': [
                     ('osmdata.filters.IgnoreUsers', [['jm']]),
-                    ('osmdata.filters.IgnoreNewTags', ['amenity=waterbasket']),
-                    ('osmdata.filters.IgnoreChangedTags', ['amenity=waterbasket']),
+                    ('osmdata.filters.IgnoreElementsCreation', ['amenity=waterbasket']),
+                    ('osmdata.filters.IgnoreElementsModification', ['amenity=waterbasket']),
                 ]
         }
         wf = WorkFlow.from_settings('gare_standard', ok_workflow)
@@ -29,8 +29,8 @@ class TestWorkFlow(TestCase):
         self.assertEqual(wf.ExporterClass, CSVExporter)
         self.assertEqual(len(wf.filters), 3)
         self.assertIsInstance(wf.filters[0], IgnoreUsers)
-        self.assertIsInstance(wf.filters[1], IgnoreNewTags)
-        self.assertIsInstance(wf.filters[2], IgnoreChangedTags)
+        self.assertIsInstance(wf.filters[1], IgnoreElementsCreation)
+        self.assertIsInstance(wf.filters[2], IgnoreElementsModification)
 
     def test_invalid_workflow_from_settings(self):
         missing_export = {'import': 'osmdata.importers.AdiffImporter'}

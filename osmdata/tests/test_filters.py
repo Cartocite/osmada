@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..filters import IgnoreUsers, IgnoreNewTags, IgnoreChangedTags
+from ..filters import IgnoreUsers, IgnoreElementsCreation, IgnoreElementsModification
 from ..models import Action
 
 
@@ -26,36 +26,36 @@ class TestIgnoreUsers(AbstractFilterTestcase):
         self.assertFilterCount(IgnoreUsers(['foo', 'overflorian']), 1)
 
 
-class TestIgnoreNewTags(AbstractFilterTestcase):
+class TestIgnoreElementsCreation(AbstractFilterTestcase):
     fixtures = ['test_filters_2.json']  # Pont Cadinet
 
     def test_non_present_tag(self):
-        self.assertFilterCount(IgnoreNewTags("non=existent"), 3)
+        self.assertFilterCount(IgnoreElementsCreation("non=existent"), 3)
 
     def test_noncreate_tag(self):
-        self.assertFilterCount(IgnoreNewTags("access=no"), 3)
+        self.assertFilterCount(IgnoreElementsCreation("access=no"), 3)
 
     def test_modify_tag(self):
-        self.assertFilterCount(IgnoreNewTags("shop=newsagent"), 2)
+        self.assertFilterCount(IgnoreElementsCreation("shop=newsagent"), 2)
 
     def test_modify_wrong_val(self):
-        self.assertFilterCount(IgnoreNewTags("shop=coffee"), 3)
+        self.assertFilterCount(IgnoreElementsCreation("shop=coffee"), 3)
 
     def test_modify_tag_wildcard_value(self):
-        self.assertFilterCount(IgnoreNewTags("shop=*"), 2)
+        self.assertFilterCount(IgnoreElementsCreation("shop=*"), 2)
 
 
 class TestIgnoreModifiedTags(AbstractFilterTestcase):
     fixtures = ['test_filters_2.json']  # Pont Cadinet
 
     def test_non_present_tag(self):
-        self.assertFilterCount(IgnoreChangedTags("non=existent"), 3)
+        self.assertFilterCount(IgnoreElementsModification("non=existent"), 3)
 
     def test_create_tag(self):
-        self.assertFilterCount(IgnoreChangedTags("access=no"), 2)
+        self.assertFilterCount(IgnoreElementsModification("access=no"), 2)
 
     def test_modify_wrong_val(self):
-        self.assertFilterCount(IgnoreChangedTags("access=hello"), 3)
+        self.assertFilterCount(IgnoreElementsModification("access=hello"), 3)
 
     def test_modify_tag_wildcard_value(self):
-        self.assertFilterCount(IgnoreChangedTags("access=*"), 2)
+        self.assertFilterCount(IgnoreElementsModification("access=*"), 2)

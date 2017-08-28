@@ -76,8 +76,8 @@ class WorkFlow:
           'export' : 'osmdata.exporters.CSVExporter',
           'filters': [
             ('osmdata.filters.IgnoreUsers', [['jm']]),
-            ('osmdata.filters.IgnoreNewTags', ['amenity=waterbasket']),
-            ('osmdata.filters.IgnoreChangedTags', ['amenity=waterbasket']),
+            ('osmdata.filters.IgnoreElementsCreation', ['amenity=waterbasket']),
+            ('osmdata.filters.IgnoreElementsModification', ['amenity=waterbasket']),
         }
 
         :param name: The workflow name you choose

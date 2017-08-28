@@ -40,18 +40,18 @@ class AbstractTagFilter(AbstractActionFilter):
             for k, v in Tag.parse_tag_pattern(pattern).items()}
 
 
-class AbstractIgnoreTags(AbstractTagFilter):
+class AbstractIgnoreMatchingElements(AbstractTagFilter):
     def filter(self, qs):
         return qs.exclude(type=self.ACTION, **self.filter_spec)
 
 
-class IgnoreNewTags(AbstractIgnoreTags):
-    """ Filter to ignore creation of elements with some tags
+class IgnoreElementsCreation(AbstractIgnoreMatchingElements):
+    """ Filter to ignore creation of matching elements
     """
     ACTION = Action.CREATE
 
 
-class IgnoreChangedTags(AbstractIgnoreTags):
-    """ Filter to ignore changes on elements with some given tags
+class IgnoreElementsModification(AbstractIgnoreMatchingElements):
+    """ Filter to ignore changes on matching elements
     """
     ACTION = Action.MODIFY
