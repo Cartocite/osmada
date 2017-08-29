@@ -20,11 +20,12 @@ class AnalyzedCSVExporter(CSVExporter):
         return [str(i) for i in l]
 
     def get_row(self, action):
+        ar = ActionReport.objects.get_or_create_for_action(action)
         return super().get_row(action) + (
-            ActionReport.find_main_tags(action, settings.TAGS_IMPORTANCE),
-            ActionReport.is_geometric_action(action),
-            ActionReport.is_tag_action(action),
-            self.str_list(ActionReport.added_tags(action)),
-            self.str_list(ActionReport.removed_tags(action)),
-            [self.str_list(i) for i in ActionReport.modified_tags(action)],
+            ar.main_tag,
+            ar.is_geometric_action,
+            ar.is_tag_action,
+            self.str_list(ar.added_tags.all()),
+            self.str_list(ar.removed_tags.all()),
+            [self.str_list(i.all()) for i in [ar.modified_tags_old, ar.modified_tags_new]],
         )
