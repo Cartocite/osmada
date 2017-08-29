@@ -2,20 +2,57 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 
-from osmdata.models import Tag, OSMElement
+from osmdata.models import Action, Tag, OSMElement
 
 
-class ActionReport:
-    """ Utility class to process some costly analysis on Action instances
+class ActionReportManager(models.Manager):
+    def get_or_create_for_action(self, action):
+        try:
+            return action.report
+        except ActionReport.DoesNotExist:
+            return self.create_for_action(action)
 
-    Future evolutions may include storing the output of the analysis (that
-    means turning ActionReport into a Django model) in database, to allow
-    filtering on it.
-    """
-    @classmethod
-    def find_main_tags(cls, action, tag_importance):
-        """
+    def create_for_action(self, action):
+        """ Instantiate and save a new ActionReport for a given Action
+
         :type action: Action
+        :rtype ActionReport:
+        """
+        ar = ActionReport(action=action)
+        ar.main_tag = ar._find_main_tag(settings.TAGS_IMPORTANCE)
+        ar.is_tag_action = ar._compute_is_tag_action()
+        ar.is_geometric_action = ar._compute_is_geometric_action()
+
+        # Save before populating the many-to-many (which require pk to be set)
+        ar.save()
+
+        ar.added_tags.set(ar._compute_added_tags())
+        ar.removed_tags.set(ar._compute_removed_tags())
+
+        old_modified_tags, new_modified_tags = ar._compute_modified_tags()
+        ar.modified_tags_old.set(old_modified_tags)
+        ar.modified_tags_new.set(new_modified_tags)
+        return ar
+
+
+class ActionReport(models.Model):
+    """ Results of costly analysis on Action instances
+    """
+    action = models.OneToOneField(Action, related_name='report')
+
+    main_tag = models.CharField(max_length=100, null=True)
+    is_tag_action = models.BooleanField()
+    is_geometric_action = models.BooleanField()
+
+    added_tags = models.ManyToManyField(Tag, related_name='added_on_reports')
+    removed_tags = models.ManyToManyField(Tag, related_name='removed_on_reports')
+    modified_tags_old = models.ManyToManyField(Tag, related_name='modified_old_on_reports')
+    modified_tags_new = models.ManyToManyField(Tag, related_name='modified_new_on_reports')
+
+    objects = ActionReportManager()
+
+    def _find_main_tag(self, tag_importance):
+        """
         :param tags_importance: ordered list giving tag patterns giving
            precedence for (most important first). Each pattern can be a
            compound form.
@@ -23,8 +60,8 @@ class ActionReport:
         :return: the main tag (tag pattern of the list which won), or None
         :rtype str:
         """
-        new_tags = Tag.objects.filter(element=action.new)
-        old_tags = Tag.objects.filter(element=action.old)
+        new_tags = Tag.objects.filter(element=self.action.new)
+        old_tags = Tag.objects.filter(element=self.action.old)
 
         # We try first the new tags and then the old tags
         for taglist in old_tags, new_tags:
@@ -38,7 +75,6 @@ class ActionReport:
                 for rule in tag_pattern_rules[1:]:
                     full_filter = full_filter | Q(**Tag.parse_tag_pattern(rule))
 
-                #import ipdb;ipdb.set_trace()
                 relevant_tags = taglist.filter(full_filter)
                 # If all pattern rules got matched
                 if relevant_tags.count() >= len(tag_pattern_rules):
@@ -47,83 +83,65 @@ class ActionReport:
 
         return None
 
-    @classmethod
-    def is_tag_action(cls, action):
-        """
-        :type action: Action
-        """
-
-        if action.type == action.CREATE:
+    def _compute_is_tag_action(self):
+        if self.action.type == self.action.CREATE:
             return False
         else:
-            old = action.old
-            new = action.new
+            old = self.action.old
+            new = self.action.new
             return old.tags_dict() != new.tags_dict()
 
-    @classmethod
-    def is_geometric_action(cls, action):
-        """
-        :type action: Action
-        """
-        element_type = action.new.type()
+    def _compute_is_geometric_action(self):
+        element_type = self.action.new.type()
 
-        if action.type in (action.CREATE, action.DELETE):
+        if self.action.type in (self.action.CREATE, self.action.DELETE):
             return True
 
         else:
             if element_type == OSMElement.NODE:
                 return (
-                    (action.new.node.lat != action.old.node.lat) or
-                    (action.new.node.lon != action.old.node.lon))
+                    (self.action.new.node.lat != self.action.old.node.lat) or
+                    (self.action.new.node.lon != self.action.old.node.lon))
 
             elif element_type == OSMElement.WAY:
-                return action.old.way.nodes_list() != action.new.way.nodes_list()
+                return self.action.old.way.nodes_list() != self.action.new.way.nodes_list()
 
             elif element_type == OSMElement.RELATION:
-                return False # FIXME: According to the meaning of what is a geometric action
+                return False # FIXME: According to the meaning of what is a geometric self.action
 
-    @classmethod
-    def added_tags(cls, action):
-        """
-        :type action: Action
-        """
-        new_tags = action.new.tags_dict()
+    def _compute_added_tags(self):
+        new_tags = self.action.new.tags_dict()
 
-        if action.type == action.CREATE:
-            return list(action.new.tags.all())
+        if self.action.type == self.action.CREATE:
+            return list(self.action.new.tags.all())
         else:
-            old_tags = action.old.tags_dict()
+            old_tags = self.action.old.tags_dict()
 
-            return [action.new.tags.get(k=i)
+            return [self.action.new.tags.get(k=i)
                     for i in new_tags if i not in old_tags]
 
-    @classmethod
-    def removed_tags(cls, action):
-        new_tags = action.new.tags_dict()
-        if action.type == action.CREATE:
+    def _compute_removed_tags(self):
+        new_tags = self.action.new.tags_dict()
+        if self.action.type == self.action.CREATE:
             return []
         else:
-            old_tags = action.old.tags_dict()
+            old_tags = self.action.old.tags_dict()
 
-            return [action.old.tags.get(k=i)
+            return [self.action.old.tags.get(k=i)
                     for i in old_tags if i not in new_tags]
 
-    @classmethod
-    def modified_tags(cls, action):
-        """
-        :type action: Action
-        """
-        if action.type == action.CREATE:
-            return [], list(action.new.tags.all())
+    def _compute_modified_tags(self):
+        if self.action.type == self.action.CREATE:
+            return [], list(self.action.new.tags.all())
         else:
-            old_tags = action.old.tags_dict()
+            old_tags = self.action.old.tags_dict()
 
             old_versions = []
             new_versions = []
 
-            for new_tag in action.new.tags.all():
+            for new_tag in self.action.new.tags.all():
                 if new_tag.k in old_tags and old_tags[new_tag.k] != new_tag.v:
                     new_versions.append(new_tag)
-                    old_versions.append(action.old.tags.get(k=new_tag.k))
+                    old_versions.append(self.action.old.tags.get(k=new_tag.k))
 
             return old_versions, new_versions
