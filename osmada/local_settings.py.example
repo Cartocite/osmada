@@ -54,9 +54,9 @@ WORKFLOWS = {
         'filters': [
             ('osmdata.filters.IgnoreUsers', [TRUSTED_USERS]),
             ('osmdata.filters.IgnoreNewTags', ['amenity=waterbasket']),
-            ('osmdata.filters.IgnoreChangedTags', ['amenity=waterbasket']),
+            ('osmdata.filters.IgnoreElementsModification', ['amenity=waterbasket']),
             ('osmdata.filters.IgnoreNewTags', ['shop=*']),
-            ('osmdata.filters.IgnoreChangedTags', ['shop=*']),
+            ('osmdata.filters.IgnoreElementsModification', ['shop=*']),
         ]
     },
     'sncf_station_advanced_csv': {
@@ -65,9 +65,9 @@ WORKFLOWS = {
         'filters': [
             ('osmdata.filters.IgnoreUsers', [TRUSTED_USERS]),
             ('osmdata.filters.IgnoreNewTags', ['amenity=waterbasket']),
-            ('osmdata.filters.IgnoreChangedTags', ['amenity=waterbasket']),
+            ('osmdata.filters.IgnoreElementsModification', ['amenity=waterbasket']),
             ('osmdata.filters.IgnoreNewTags', ['shop=*']),
-            ('osmdata.filters.IgnoreChangedTags', ['shop=*']),
+            ('osmdata.filters.IgnoreElementsModification', ['shop=*']),
         ]
     },
     'sncf_station_advanced_adiff': {
@@ -76,9 +76,9 @@ WORKFLOWS = {
         'filters': [
             ('osmdata.filters.IgnoreUsers', [TRUSTED_USERS]),
             ('osmdata.filters.IgnoreNewTags', ['amenity=waterbasket']),
-            ('osmdata.filters.IgnoreChangedTags', ['amenity=waterbasket']),
+            ('osmdata.filters.IgnoreElementsModification', ['amenity=waterbasket']),
             ('osmdata.filters.IgnoreNewTags', ['shop=*']),
-            ('osmdata.filters.IgnoreChangedTags', ['shop=*']),
+            ('osmdata.filters.IgnoreElementsModification', ['shop=*']),
         ]
     },
     'passthrough': {
