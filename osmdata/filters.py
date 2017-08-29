@@ -40,6 +40,15 @@ class AbstractTagFilter(AbstractActionFilter):
             for k, v in Tag.parse_tag_pattern(pattern).items()}
 
 
+class IgnoreTags(AbstractActionFilter):
+    """ Filter out actions with only ignored tags
+    """
+    def filter(self, qs):
+        # FIXME: to be tested
+        interesting_tags = Tag.objects.exclude(k='name')
+        return self.qs.filter(new__tags__in=interesting_tags)
+
+
 class AbstractIgnoreMatchingElements(AbstractTagFilter):
     def filter(self, qs):
         return qs.exclude(type=self.ACTION, **self.filter_spec)
