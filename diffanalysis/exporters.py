@@ -11,7 +11,7 @@ class AnalyzedCSVExporter(CSVExporter):
     def get_header_row(self):
         return super().get_header_row() + (
             'main_tag', 'is_geometric_action', 'is_tag_action',
-            'added_tags', 'removed_tags', 'modified_tags')
+            'added_tags', 'removed_tags', 'modified_tags', 'version_delta')
 
     @staticmethod
     def str_list(l):
@@ -29,4 +29,5 @@ class AnalyzedCSVExporter(CSVExporter):
             self.str_list(ar.removed_tags.all()),
             [self.str_list(i.all())
              for i in [ar.modified_tags_old, ar.modified_tags_new]],
+            ar.version_delta,
         )
