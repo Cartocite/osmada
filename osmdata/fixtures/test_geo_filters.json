@@ -1,0 +1,65 @@
+[
+{
+  "model": "osmdata.osmelement",
+  "pk": 4713,
+  "fields": {
+    "osmid": 3497428295,
+    "version": 5,
+    "timestamp": "2016-04-14T08:35:18Z",
+    "uid": 125897,
+    "user": "overflorian",
+    "changeset": 38549564,
+    "bounds": null,
+    "visible": true
+  }
+},
+{
+  "model": "osmdata.osmelement",
+  "pk": 4714,
+  "fields": {
+    "osmid": 3497428295,
+    "version": 6,
+    "timestamp": "2016-09-10T14:41:56Z",
+    "uid": 4540825,
+    "user": "Eunjeung Yu",
+    "changeset": 42060502,
+    "bounds": null,
+    "visible": true
+  }
+},
+{
+  "model": "osmdata.node",
+  "pk": 4713,
+  "fields": {
+    "lat": 48.7954702,
+    "lon": 2.1355157
+  }
+},
+{
+  "model": "osmdata.node",
+  "pk": 4714,
+  "fields": {
+    "lat": 48.7954702,
+    "lon": 2.1355157
+  }
+},
+{
+  "model": "osmdata.action",
+  "pk": 27,
+  "fields": {
+    "type": "modify",
+    "new": 4714,
+    "old": 4713
+  }
+},
+{
+  "model": "osmdata.diff",
+  "pk": 2,
+  "fields": {
+    "import_date": "2016-10-21T16:04:24.488Z",
+    "actions": [
+      27
+    ]
+  }
+}
+]

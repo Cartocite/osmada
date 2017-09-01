@@ -1,6 +1,7 @@
+from django.contrib.gis.db.models.functions import Distance
 from django.db.models import Q
 
-from osmdata.models import Action, Tag
+from osmdata.models import Action, Tag, Node
 
 
 class AbstractActionFilter:  # pragma: no cover
@@ -100,11 +101,12 @@ class IgnoreSmallNodeMoves(AbstractActionFilter):
 
     def filter(self, qs):
         # generate the missing latlon, if required
+
         for i in Node.objects.filter(latlon__isnull=True):
             i.save()
 
         qs_w_distance = qs.annotate(
-            move=monkeypatch.Distance(
+            move=Distance(
                 'old__node__latlon', 'new__node__latlon'))
         return qs_w_distance.filter(
             # Keep non-nodes or non-modification
