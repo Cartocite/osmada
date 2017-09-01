@@ -1,6 +1,8 @@
 from django.test import TestCase
 
-from ..filters import IgnoreUsers, IgnoreElementsCreation, IgnoreElementsModification, IgnoreKeys
+from ..filters import (
+    IgnoreElementsCreation, IgnoreElementsModification,
+    IgnoreKeys, IgnoreSmallNodeMoves, IgnoreUsers)
 from ..models import Action
 from diffanalysis.models import ActionReport
 
@@ -81,3 +83,34 @@ class TestIgnoredKeys(AbstractFilterTestcase):
 
     def test_present_tag(self):
         self.assertFilterCount(IgnoreKeys(['name:ko']), 0)
+
+
+class TestIgnoreSmallNodeMoves(AbstractFilterTestcase):
+    fixtures = ['test_geo_filters']
+
+    def test_keep_no_move(self):
+        self.assertFilterCount(
+            IgnoreSmallNodeMoves(min_move=100),
+            1)
+
+    def test_keep_big_move(self):
+        ac = Action.objects.first()
+        ac.new.node.lat = 48.79869
+        ac.new.node.lon = 2.13258
+        ac.new.node.save()
+
+        self.assertFilterCount(
+            IgnoreSmallNodeMoves(min_move=100),
+            1)
+
+        pass
+
+    def test_drop_small_move(self):
+        ac = Action.objects.first()
+        ac.new.node.lat = 48.79549
+        ac.new.node.lon = 2.13560
+        ac.new.node.save()
+
+        self.assertFilterCount(
+            IgnoreSmallNodeMoves(min_move=100),
+            0)
