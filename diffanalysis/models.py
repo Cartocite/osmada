@@ -22,6 +22,7 @@ class ActionReportManager(models.Manager):
         ar.main_tag = ar._find_main_tag(settings.TAGS_IMPORTANCE)
         ar.is_tag_action = ar._compute_is_tag_action()
         ar.is_geometric_action = ar._compute_is_geometric_action()
+        ar.version_delta = ar._compute_version_delta()
 
         # Save before populating the many-to-many (which require pk to be set)
         ar.save()
@@ -48,6 +49,7 @@ class ActionReport(models.Model):
     removed_tags = models.ManyToManyField(Tag, related_name='removed_on_reports')
     modified_tags_old = models.ManyToManyField(Tag, related_name='modified_old_on_reports')
     modified_tags_new = models.ManyToManyField(Tag, related_name='modified_new_on_reports')
+    version_delta = models.PositiveSmallIntegerField(default=0)
 
     objects = ActionReportManager()
 
@@ -145,3 +147,10 @@ class ActionReport(models.Model):
                     old_versions.append(self.action.old.tags.get(k=new_tag.k))
 
             return old_versions, new_versions
+
+    def _compute_version_delta(self):
+        old, new = self.action.old, self.action.new
+        if old and new:
+            return new.version - old.version
+        else:
+            return 0

@@ -114,6 +114,15 @@ class ActionReportTest(TestCase):
             ar._compute_modified_tags(),
             ([], list(action.new.tags.all())))
 
+    def test_version_delta(self):
+        create_ar = ActionReport(
+            action=Action.objects.filter(type='create').first())
+        modify_ar = ActionReport(
+            action=Action.objects.filter(type='modify').first())
+
+        self.assertEqual(create_ar._compute_version_delta(), 0)
+        self.assertEqual(modify_ar._compute_version_delta(), 1)
+
 
 class ActionReportGeometricTests(TestCase):
     fixtures = ['test_geometric_action.json']  # Avenue du président Keneddy
