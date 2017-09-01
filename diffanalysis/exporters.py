@@ -27,5 +27,6 @@ class AnalyzedCSVExporter(CSVExporter):
             ar.is_tag_action,
             self.str_list(ar.added_tags.all()),
             self.str_list(ar.removed_tags.all()),
-            [self.str_list(i.all()) for i in [ar.modified_tags_old, ar.modified_tags_new]],
+            [self.str_list(i.all())
+             for i in [ar.modified_tags_old, ar.modified_tags_new]],
         )
