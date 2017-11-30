@@ -6,8 +6,8 @@ Osmada − OpenStreetMap Augmented Diff Analyzer
 Introduction
 ------------
 OSMADA is a component to help monitor changes to OSM data. Unlike most QA Tools that are 
-based on monitoring changesets, OSMADA is designed to help monitor changes to specific data, 
-for instance the shops and restaurants of your city. 
+based on monitoring changesets, OSMADA is designed to help monitor changes to data you're
+interested in, for instance the shops and restaurants of your city. 
 
 OSMADA reads and analyzes the result of 
 [Overpass Augmented Diff](https://wiki.openstreetmap.org/wiki/Overpass_API/Augmented_Diffs) 
@@ -23,7 +23,7 @@ a filter is to remove an action element from the changes.
 OSMADA is designed to be used in workflows, typically composed of 3 steps :
 1. Load the changes in a database (SpatiaLite)
 2. Filter changes, for instance to ignore changes from trusted users or changes to unsignificant tags
-3. Export the remaining changes in same format (Augment diff) or a different one (CSV only for now)
+3. Export the remaining changes in same format (Augmented diff) or a different one (CSV only for now)
 
 A workflow is defined as a Python settings file, a commented example is supplied in the osmada folder.
 
