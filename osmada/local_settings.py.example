@@ -5,7 +5,7 @@
 # First matching tag from TAGS_IMPORTANCE from the list will be elected as main
 # tag. Note that you can use a multi-criteria filter (see example).
 #
-TAGS_IMPORTANCE = ['railway=*,operator=SNCF', 'shop=*']
+TAGS_IMPORTANCE = ['highway=*,cycleway=track', 'shop=*']
 
 # TRUSTED_USERS
 #
@@ -48,37 +48,37 @@ TRUSTED_USERS = ['margaret doe', 'thelma doe', 'steve doe', 'jack doe']
 # 2. a list of parameters to pass to the filter
 #
 WORKFLOWS = {
-    'sncf_station_simple_csv': {
+    'test_simple_csv': {
         'import': 'osmdata.importers.AdiffImporter',
         'export' : 'osmdata.exporters.CSVExporter',
         'filters': [
             ('osmdata.filters.IgnoreUsers', [TRUSTED_USERS]),
-            ('osmdata.filters.IgnoreNewTags', ['amenity=waterbasket']),
-            ('osmdata.filters.IgnoreElementsModification', ['amenity=waterbasket']),
-            ('osmdata.filters.IgnoreNewTags', ['shop=*']),
-            ('osmdata.filters.IgnoreElementsModification', ['shop=*']),
+            ('osmdata.filters.IgnoreNewTags', ['amenity=wastebasket']),
+            ('osmdata.filters.IgnoreElementsModification', ['highway=crossing']),
+            ('osmdata.filters.IgnoreNewTags', ['wikidata=*']),
+            ('osmdata.filters.IgnoreElementsModification', ['note=*']),
         ]
     },
-    'sncf_station_advanced_csv': {
+    'test_advanced_csv': {
         'import': 'osmdata.importers.AdiffImporter',
         'export' : 'diffanalysis.exporters.AnalyzedCSVExporter',
         'filters': [
             ('osmdata.filters.IgnoreUsers', [TRUSTED_USERS]),
-            ('osmdata.filters.IgnoreNewTags', ['amenity=waterbasket']),
-            ('osmdata.filters.IgnoreElementsModification', ['amenity=waterbasket']),
-            ('osmdata.filters.IgnoreNewTags', ['shop=*']),
-            ('osmdata.filters.IgnoreElementsModification', ['shop=*']),
+            ('osmdata.filters.IgnoreNewTags', ['amenity=wastebasket']),
+            ('osmdata.filters.IgnoreElementsModification', ['highway=crossing']),
+            ('osmdata.filters.IgnoreNewTags', ['wikidata=*']),
+            ('osmdata.filters.IgnoreElementsModification', ['note=*']),
         ]
     },
-    'sncf_station_advanced_adiff': {
+    'test_advanced_adiff': {
         'import': 'osmdata.importers.AdiffImporter',
         'export' : 'osmdata.exporters.AdiffExporter',
         'filters': [
             ('osmdata.filters.IgnoreUsers', [TRUSTED_USERS]),
-            ('osmdata.filters.IgnoreNewTags', ['amenity=waterbasket']),
-            ('osmdata.filters.IgnoreElementsModification', ['amenity=waterbasket']),
-            ('osmdata.filters.IgnoreNewTags', ['shop=*']),
-            ('osmdata.filters.IgnoreElementsModification', ['shop=*']),
+            ('osmdata.filters.IgnoreNewTags', ['amenity=wastebasket']),
+            ('osmdata.filters.IgnoreElementsModification', ['highway=crossing']),
+            ('osmdata.filters.IgnoreNewTags', ['wikidata=*']),
+            ('osmdata.filters.IgnoreElementsModification', ['note=*']),
         ]
     },
     'passthrough': {
