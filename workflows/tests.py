@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from diffanalysis.models import ActionReport
 import osmdata
 from osmdata.filters import IgnoreUsers, IgnoreElementsCreation, IgnoreElementsModification, AbstractActionFilter
 from osmdata.importers import AdiffImporter
@@ -103,3 +104,14 @@ class TestWorkFlow(TestCase):
         wf.out_qs = wf.diff.actions
 
         self.assertEqual(wf.write_output(), 1)
+
+    def test_make_actionreports(self):
+        wf = WorkFlow(
+            name='test',
+            importer=osmdata.importers.AdiffImporter,
+            exporter=osmdata.exporters.CSVExporter)
+
+        wf.diff = Diff.objects.first()
+        wf.make_action_reports()
+
+        self.assertEqual(ActionReport.objects.count(), wf.diff.actions.count())

@@ -1,6 +1,8 @@
 from django.utils.module_loading import import_string
 
 
+from diffanalysis.models import ActionReport
+
 class WorkFlow:
     """ Complete Import-Filter-Export cycle
 
@@ -38,6 +40,15 @@ class WorkFlow:
         self.diff = importer.run()
         return self.diff
 
+    def make_action_reports(self):
+        """ Make an ActionReport for each Action of the queryset
+
+        This operation is costly, but the result might be used by some
+        filters.
+        """
+        for action in self.diff.actions.all():
+            ActionReport.objects.get_or_create_for_action(action)
+
     def iter_filters(self):
         """ Iteratively apply filters on diff
 
@@ -46,7 +57,7 @@ class WorkFlow:
         if self.diff is None:
             raise ValueError("You should import data first")
 
-        self.out_qs = self.diff.actions
+        self.out_qs = self.diff.actions.select_related('report')
         for _filter in self.filters:
             self.out_qs = _filter.filter(self.out_qs)
             yield _filter, self.out_qs

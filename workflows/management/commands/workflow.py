@@ -34,7 +34,12 @@ class Command(BaseCommand):
         diff = workflow.run_import(input_path)
         sys.stderr.write('OK, imported as "{}"\n'.format(diff))
 
-        sys.stderr.write('[2] Filtering ({} filters)...\n'.format(
+        sys.stderr.write('[2] Computing data for each <action>')
+        sys.stderr.flush()
+        workflow.make_action_reports()
+        sys.stderr.write('OK\n')
+
+        sys.stderr.write('[3] Filtering ({} filters)...\n'.format(
             len(workflow.filters)))
 
         # FIXME: a count() on each loop run is good for debug but may be
@@ -44,6 +49,6 @@ class Command(BaseCommand):
             sys.stderr.write('  - {} ran, {}/{} kept\n'.format(
                 _filter.__class__.__name__, qs.count(), initial_count))
 
-        sys.stderr.write('[3] Writing output...\n')
+        sys.stderr.write('[4] Writing output...\n')
 
         print(workflow.write_output())
