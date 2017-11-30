@@ -2,6 +2,8 @@ from django.utils.module_loading import import_string
 
 
 from diffanalysis.models import ActionReport
+from osmdata.patchers import FixRemoveOperationMetadata
+
 
 class WorkFlow:
     """ Complete Import-Filter-Export cycle
@@ -65,6 +67,17 @@ class WorkFlow:
     def write_output(self):
         return self.ExporterClass().run(self.out_qs)
 
+    def apply_data_patches(self):
+        """ That step modifies the data in database
+
+        This is mainly intended for workarounds
+        """
+        # Make it configurable ?
+        patches = [FixRemoveOperationMetadata]
+        for PatchClass in patches:
+            patch = PatchClass()
+            yield patch.description
+            patch.patch(self.diff.actions)
 
     @classmethod
     def from_settings(cls, name, spec):
