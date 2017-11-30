@@ -39,7 +39,13 @@ class Command(BaseCommand):
         workflow.make_action_reports()
         sys.stderr.write('OK\n')
 
-        sys.stderr.write('[3] Filtering ({} filters)...\n'.format(
+        sys.stderr.write('[3] Patching data…\n')
+        for patch_description in workflow.apply_data_patches():
+            sys.stderr.write('  - Applying {}\n'.format(patch_description))
+
+        sys.stderr.write('OK\n')
+
+        sys.stderr.write('[4] Filtering ({} filters)...\n'.format(
             len(workflow.filters)))
 
         # FIXME: a count() on each loop run is good for debug but may be
@@ -49,6 +55,6 @@ class Command(BaseCommand):
             sys.stderr.write('  - {} ran, {}/{} kept\n'.format(
                 _filter.__class__.__name__, qs.count(), initial_count))
 
-        sys.stderr.write('[4] Writing output...\n')
+        sys.stderr.write('[5] Writing output...\n')
 
         print(workflow.write_output())
