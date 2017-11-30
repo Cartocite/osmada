@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from osmdata.models import Action, Tag
 
 
@@ -55,3 +57,38 @@ class IgnoreElementsModification(AbstractIgnoreMatchingElements):
     """ Filter to ignore changes on matching elements
     """
     ACTION = Action.MODIFY
+
+
+class IgnoreKeys(AbstractActionFilter):
+    """ We want to totaly ignore some keys
+
+    So just exclude the actions that are related *only* to tags change and
+    *only*  to those ignored keys.
+    """
+
+    def __init__(self, ignored_keys):
+        self.ignored_keys = ignored_keys
+        self.re_interesting_keys = r'^(?!({})$).*'.format(
+            '|'.join(ignored_keys))
+
+    def filter(self, qs):
+        # Build a regex that will match only
+
+        # A performance improvement would be to add a field in ActionReport
+        # with the list of all related tags, whatever they are
+        # added/removed/deleted…
+
+        return qs.filter(
+            # Geometric actions carry more than just something about our tags
+            Q(report__is_geometric_action=True) |
+            # node being neither geometric nor tag (membership change)
+            Q(report__is_tag_action=False) |
+            # If we have a tag related action, it must be related at least to
+            # one key that is outside our list
+            Q(report__is_tag_action=True) & (
+                Q(report__added_tags__k__iregex=self.re_interesting_keys)
+                | Q(report__removed_tags__k__iregex=self.re_interesting_keys)
+                | Q(report__modified_tags_old__k__iregex=self.re_interesting_keys)
+                | Q(report__modified_tags_old__k__iregex=self.re_interesting_keys)
+            )
+        ).distinct()

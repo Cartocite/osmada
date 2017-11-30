@@ -1,7 +1,8 @@
 from django.test import TestCase
 
-from ..filters import IgnoreUsers, IgnoreElementsCreation, IgnoreElementsModification
+from ..filters import IgnoreUsers, IgnoreElementsCreation, IgnoreElementsModification, IgnoreKeys
 from ..models import Action
+from diffanalysis.models import ActionReport
 
 
 class AbstractFilterTestcase(TestCase):
@@ -59,3 +60,24 @@ class TestIgnoreModifiedTags(AbstractFilterTestcase):
 
     def test_modify_tag_wildcard_value(self):
         self.assertFilterCount(IgnoreElementsModification("access=*"), 2)
+
+
+class TestIgnoredKeys(AbstractFilterTestcase):
+    fixtures = ['test_filters.json']  # Pont Cadinet
+
+    def setUp(self):
+        # This filter requires the ActionReports
+        for action in Action.objects.all():
+            ActionReport.objects.get_or_create_for_action(action)
+
+    def test_empty_list(self):
+        self.assertFilterCount(IgnoreKeys([]), 1)
+
+    def test_non_present_tag(self):
+        self.assertFilterCount(IgnoreKeys(['shop']), 1)
+
+    def test_non_present_tags(self):
+        self.assertFilterCount(IgnoreKeys(['shop', 'name']), 1)
+
+    def test_present_tag(self):
+        self.assertFilterCount(IgnoreKeys(['name:ko']), 0)

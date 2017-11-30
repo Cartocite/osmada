@@ -16,6 +16,15 @@ TAGS_IMPORTANCE = ['highway=*,cycleway=track', 'shop=*']
 #
 TRUSTED_USERS = ['margaret doe', 'thelma doe', 'steve doe', 'jack doe']
 
+
+
+# A list of keys that are not worth looking at them
+
+# Note that the software itself do not use that variable but it's only used in
+# WORKFLOWS setting from this very file (IgnoreKeys filter)
+#
+IGNORED_KEYS = ['note', 'description']
+
 # WORKFLOWS
 #
 # The core setting :workflow definitions, as a dict.
@@ -57,6 +66,7 @@ WORKFLOWS = {
             ('osmdata.filters.IgnoreElementsModification', ['highway=crossing']),
             ('osmdata.filters.IgnoreNewTags', ['wikidata=*']),
             ('osmdata.filters.IgnoreElementsModification', ['note=*']),
+            ('osmdata.filters.IgnoreKeys', [IGNORED_KEYS]),
         ]
     },
     'test_advanced_csv': {
@@ -68,6 +78,7 @@ WORKFLOWS = {
             ('osmdata.filters.IgnoreElementsModification', ['highway=crossing']),
             ('osmdata.filters.IgnoreNewTags', ['wikidata=*']),
             ('osmdata.filters.IgnoreElementsModification', ['note=*']),
+            ('osmdata.filters.IgnoreKeys', [IGNORED_KEYS]),
         ]
     },
     'test_advanced_adiff': {
@@ -79,6 +90,7 @@ WORKFLOWS = {
             ('osmdata.filters.IgnoreElementsModification', ['highway=crossing']),
             ('osmdata.filters.IgnoreNewTags', ['wikidata=*']),
             ('osmdata.filters.IgnoreElementsModification', ['note=*']),
+            ('osmdata.filters.IgnoreKeys', [IGNORED_KEYS]),
         ]
     },
     'passthrough': {
