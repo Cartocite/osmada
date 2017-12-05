@@ -2,18 +2,16 @@ from xml.dom.minidom import parse
 
 from .parsers import AdiffParser, FileFormatError
 
+
 class ImporterError(Exception):
     pass
 
-class AbstractImporter:  # pragma: no cover
-    def __init__(self, path):
-        """
-        :param path: a path to fetch the resource (URL, file path…)
-        """
-        raise NotImplemented
 
-    def run(self):
+class AbstractImporter:  # pragma: no cover
+    def run(self, path):
         """ Blocking function processing the import
+
+        :param path: a path to fetch the resource (URL, file path…)
         :rtype: .models.Diff
         """
         raise NotImplemented
@@ -25,10 +23,8 @@ class AdiffImporter(AbstractImporter):
     See https://wiki.openstreetmap.org/wiki/Overpass_API/Augmented_Diffs
     """
 
-    def __init__(self, path):
+    def run(self, path):
         self.path = path
-
-    def run(self):
         try:
             dom = parse(self.path)
         except OSError as e:

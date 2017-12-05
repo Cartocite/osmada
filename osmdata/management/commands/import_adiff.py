@@ -14,8 +14,8 @@ class Command(BaseCommand):
 
     def handle(self, adiff_path, *args, **options):
         try:
-            importer = AdiffImporter(adiff_path)
-            diff = importer.run()
+            importer = AdiffImporter()
+            diff = importer.run(adiff_path)
         except ImporterError as e:
             raise CommandError(e)
 
