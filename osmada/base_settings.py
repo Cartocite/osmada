@@ -134,10 +134,12 @@ STATIC_URL = '/static/'
 
 TAGS_IMPORTANCE = ['highway=*', 'railway=*', 'shop=*', 'name=*']
 
-WORKFLOWS = {
-    'passthrough': {
-        'import': 'osmdata.importers.AdiffImporter',
-        'export' : 'osmdata.exporters.AdiffExporter',
-        'filters': [],
-    }
-}
+WORKFLOWS = [
+    {
+        'name': 'test_passthrough_adiff',
+        'flow': [
+            {'type': 'import', 'class': 'osmdata.importers.AdiffImporter'},
+            {'type': 'export', 'class': 'osmdata.exporters.AdiffExporter'},
+        ],
+    },
+]
