@@ -92,3 +92,24 @@ class IgnoreKeys(AbstractActionFilter):
                 | Q(report__modified_tags_old__k__iregex=self.re_interesting_keys)
             )
         ).distinct()
+
+
+class IgnoreSmallNodeMoves(AbstractActionFilter):
+    def __init__(self, min_move):
+        self.min_move = min_move
+
+    def filter(self, qs):
+        # generate the missing latlon, if required
+        for i in Node.objects.filter(latlon__isnull=True):
+            i.save()
+
+        qs_w_distance = qs.annotate(
+            move=monkeypatch.Distance(
+                'old__node__latlon', 'new__node__latlon'))
+        return qs_w_distance.filter(
+            # Keep non-nodes or non-modification
+            Q(old__node=None) | Q(new__node=None)
+            # Keep zero-moves
+            | Q(move=0)
+            # Keep big enough moves
+            | Q(move__gte=self.min_move))
