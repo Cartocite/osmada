@@ -39,7 +39,9 @@ class ActionReportManager(models.Manager):
 class ActionReport(models.Model):
     """ Results of costly analysis on Action instances
     """
-    action = models.OneToOneField(Action, related_name='report')
+    action = models.OneToOneField(
+        Action, related_name='report',
+        on_delete=models.CASCADE)
 
     main_tag = models.CharField(max_length=100, null=True)
     is_tag_action = models.BooleanField()

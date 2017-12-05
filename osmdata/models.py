@@ -27,7 +27,9 @@ class OSMElement(models.Model):
     uid = models.PositiveIntegerField(null=True)
     user = models.CharField(blank=True, max_length=255)
     changeset = models.PositiveIntegerField(null=True)
-    bounds = models.OneToOneField(Bounds, null=True, blank=True)
+    bounds = models.OneToOneField(
+        Bounds,
+        null=True, blank=True, on_delete=models.PROTECT)
     visible = models.BooleanField(default=True)
 
     def specialized(self):
@@ -53,7 +55,7 @@ class OSMElement(models.Model):
 
 
 class Tag(models.Model):
-    element = models.ForeignKey(OSMElement, related_name='tags')
+    element = models.ForeignKey(OSMElement, related_name='tags', on_delete=models.CASCADE)
     k = models.CharField(max_length=255)
     v = models.CharField(max_length=255)
 
@@ -129,8 +131,8 @@ class Way(OSMElement):
         return self.nodes.values_list('osmid', 'lat', 'lon')
 
 class WayNode(models.Model):
-    way = models.ForeignKey(Way)
-    node = models.ForeignKey(Node)
+    way = models.ForeignKey(Way, on_delete=models.CASCADE)
+    node = models.ForeignKey(Node, on_delete=models.CASCADE)
     order = models.PositiveIntegerField()
 
 
@@ -142,8 +144,8 @@ class Relation(OSMElement):
 
 
 class RelationMember(models.Model):
-    relation = models.ForeignKey(Relation, related_name='members')
-    element = models.ForeignKey(OSMElement, related_name='related_element')
+    relation = models.ForeignKey(Relation, related_name='members', on_delete=models.CASCADE)
+    element = models.ForeignKey(OSMElement, related_name='related_element', on_delete=models.CASCADE)
     order = models.PositiveIntegerField()
     role = models.CharField(max_length=255, blank=True)
 
@@ -161,8 +163,12 @@ class Action(models.Model):
             (MODIFY, MODIFY),
             (CREATE, CREATE)))
 
-    new = models.OneToOneField(OSMElement, related_name='new_for', null=True)
-    old = models.OneToOneField(OSMElement, related_name='old_for', null=True)
+    new = models.OneToOneField(
+        OSMElement,
+        related_name='new_for', null=True, on_delete=models.PROTECT)
+    old = models.OneToOneField(
+        OSMElement,
+        related_name='old_for', null=True, on_delete=models.PROTECT)
 
 class Diff(models.Model):
     actions = models.ManyToManyField(Action)
