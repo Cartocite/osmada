@@ -22,8 +22,23 @@ class Command(BaseCommand):
         # Positional arguments
         parser.add_argument('workflow_name')
         parser.add_argument('input_path')
+        parser.add_argument(
+            '--output-paths', nargs="*", default=[],
+            help="The path of the output file(s) to import, if you omit that" +
+            "argument the output(s) will be printed on standard output")
 
-    def handle(self, workflow_name, input_path, *args, **options):
+    def _validate_output_paths(self, workflow, output_paths):
+        outputs = [step for step in workflow.steps
+                   if step.type == step.STEP_EXPORT]
+        # If nothing is provided, let's bind all outputs to stdout
+        if output_paths == []:
+            output_paths = ['/dev/stdout' for i in outputs]
+        if len(outputs) != len(output_paths):
+            raise LoggedCommandError(
+                'You must provide exactly one output path per Exporter in your workflow')
+        return output_paths
+
+    def handle(self, workflow_name, input_path, output_paths, *args, **options):
         # Build a workflow index, by name
         workflows = {
             workflow['name']: workflow for workflow in settings.WORKFLOWS
@@ -44,6 +59,8 @@ class Command(BaseCommand):
         else:
             logger.debug('[0] OK\n')
 
+        output_paths = self._validate_output_paths(workflow, output_paths)
+
         logger.info('[1] Running workflow {}…'.format(workflow_name))
-        workflow.run(input_path)
+        workflow.run(input_path, output_paths)
         logger.info('[1] OK')

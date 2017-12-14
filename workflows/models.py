@@ -41,10 +41,14 @@ class WorkFlow:
         self.steps = steps
         self.diff = None
 
-    def run(self, path):
+    def run(self, path, output_paths):
         qs = Action.objects.none()
         diff = None
         self.last_step_output = None
+
+        # We want to pop() so first got will be at the end
+        output_paths_stack = output_paths.copy()
+        output_paths_stack.reverse()
 
         for step in self.steps:
             logger.debug('Running step {}'.format(step.instance))
@@ -59,11 +63,13 @@ class WorkFlow:
                 self.make_action_reports(qs)
 
             elif step.type == step.STEP_EXPORT:
-                # output file content is first stored in memory,
-                # as a string
+                output_path = output_paths_stack.pop()
+                logger.info('Exporting to "{}"'.format(output_path))
                 output = step.instance.run(qs)
+                with open(output_path, 'w') as output_fd:
+                    output_fd.write(str(output))
                 self.last_step_output = output
-                print(output)
+
             elif step.type == step.STEP_FILTER:
                 qs = step.instance.filter(qs)
                 self.last_step_output = qs

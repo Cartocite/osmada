@@ -73,7 +73,7 @@ class TestWorkFlow(TestCase):
             name='test',
             steps=[]
         )
-        wf.run(get_test_file_path('create_action.osm'))
+        wf.run([get_test_file_path('create_action.osm')], ['/dev/null'])
 
     def test_run_import(self):
         wf = WorkFlow(
@@ -85,7 +85,7 @@ class TestWorkFlow(TestCase):
         self.assertEqual(Diff.objects.count(), 1)
         self.assertEqual(ActionReport.objects.count(), 0)
 
-        wf.run(get_test_file_path('create_action.osm'))
+        wf.run([get_test_file_path('create_action.osm')], ['/dev/null'])
 
         self.assertEqual(Diff.objects.count(), 2)
         # Check that action reports have been made
@@ -103,7 +103,7 @@ class TestWorkFlow(TestCase):
                 Step(Step.STEP_EXPORT, _CounterExporter, [])
             ]
         )
-        wf.run(get_test_file_path('create_action.osm'))
+        wf.run([get_test_file_path('create_action.osm')], ['/dev/null'])
         self.assertEqual(wf.last_step_output, 1)
 
     def test_filter_filter_in(self):
@@ -115,7 +115,7 @@ class TestWorkFlow(TestCase):
                      [["DoNotExist"]])
             ]
         )
-        wf.run(get_test_file_path('create_action.osm'))
+        wf.run([get_test_file_path('create_action.osm')], ['/dev/null'])
         self.assertEqual(wf.last_step_output.count(), 1)
 
     def test_filter_filter_out(self):
@@ -126,5 +126,5 @@ class TestWorkFlow(TestCase):
                 Step(Step.STEP_FILTER, osmdata.filters.IgnoreUsers, [["Yann_L"]])
             ]
         )
-        wf.run(get_test_file_path('create_action.osm'))
+        wf.run([get_test_file_path('create_action.osm')], ['/dev/null'])
         self.assertEqual(wf.last_step_output.count(), 0)

@@ -111,6 +111,10 @@ file:
     $ ./manage.py workflow passthrough /home/steve/my_adiff.xml > out_adiff.xml
 
 
+Alternatively, you can mention `--output-paths` :
+
+    $ ./manage.py workflow passthrough /home/steve/my_adiff.xml --output-paths out_adiff.xml
+
 *workflow* and *loaddata* commands can be made more verbose, using `LOGLEVEL`
 environment variable. Eg:
 
