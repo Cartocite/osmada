@@ -103,22 +103,27 @@ You can have different workflows, configured in settings. By default, you only
 have one available called `passthrough` (basically useless) ; you can run it on
 some adiff file of yours:
 
-    $ ./manage.py workflow passthrough /home/steve/my_adiff.xml
+    $ ./manage.py workflow passthrough \
+        --input-paths /home/steve/my_adiff.xml
 
 It will output adiff XML code to stdout ; you may want to redirect it to some
 file:
 
-    $ ./manage.py workflow passthrough /home/steve/my_adiff.xml > out_adiff.xml
+    $ ./manage.py workflow passthrough --input-paths
+        /home/steve/my_adiff.xml > out_adiff.xml
 
 
 Alternatively, you can mention `--output-paths` :
 
-    $ ./manage.py workflow passthrough /home/steve/my_adiff.xml --output-paths out_adiff.xml
+    $ ./manage.py workflow passthrough
+        --input-paths /home/steve/my_adiff.xml \
+        --output-paths out_adiff.xml
 
 *workflow* and *loaddata* commands can be made more verbose, using `LOGLEVEL`
 environment variable. Eg:
 
-    $ LOGLEVEL=DEBUG ./manage.py workflow passthrough /home/steve/my_adiff.xml > out_adiff.xml
+    $ LOGLEVEL=DEBUG ./manage.py workflow passthrough \
+        --input-paths /home/steve/my_adiff.xml > out_adiff.xml
 
 Available log levels are : *INFO*, *DEBUG*, *WARNING*, *ERROR* and *CRITICAL*. Default is **INFO**.
 
@@ -254,4 +259,4 @@ something like:
 
 Bash to the rescue (example) :
 
-    $ for f in /home/steve/*.osm; do ./manage.py workflow passthrough "$f" > "/tmp/`basename -s.osm ${f}`.adiff" ; done
+    $ for f in /home/steve/*.osm; do ./manage.py workflow passthrough --input-paths "$f" --ouptput-paths "/tmp/`basename -s.osm ${f}`.adiff" ; done

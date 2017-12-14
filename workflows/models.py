@@ -24,6 +24,13 @@ class Step:
         self.instance = step_class(*step_params)
 
 
+def reversed_copy(l):
+    # We use those list as stack so we want to reverse them.
+    l_stack = l.copy()
+    l.reverse()
+    return l_stack
+
+
 class WorkFlow:
     """Complete Import-Filter-Export cycle
 
@@ -41,19 +48,22 @@ class WorkFlow:
         self.steps = steps
         self.diff = None
 
-    def run(self, path, output_paths):
+    def run(self, input_paths, output_paths):
         qs = Action.objects.none()
         diff = None
         self.last_step_output = None
 
-        # We want to pop() so first got will be at the end
-        output_paths_stack = output_paths.copy()
-        output_paths_stack.reverse()
+        output_paths_stack = reversed_copy(output_paths)
+        input_paths_stack = reversed_copy(input_paths)
 
         for step in self.steps:
             logger.debug('Running step {}'.format(step.instance))
+
             if step.type == step.STEP_IMPORT:
-                diff = step.instance.run(path)
+                input_path = input_paths_stack.pop()
+                logger.info('Importing from "{}"'.format(input_path))
+                logger.debug('next steps will use this data')
+                diff = step.instance.run(input_path)
                 # every import step overwrite any previous qs :
                 qs = diff.actions
                 self.last_step_output = qs
