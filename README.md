@@ -5,22 +5,22 @@ Osmada − OpenStreetMap Augmented Diff Analyzer
 
 Introduction
 ------------
-Osmada is a component to help monitor changes to OSM data. Unlike most QA Tools that are 
+Osmada is a component to help monitor changes to OSM data. Unlike most QA Tools that are
 based on monitoring changesets, OSMADA is designed to help monitor changes to data you're
-interested in, for instance the shops and restaurants of your city. 
+interested in, for instance the shops and restaurants of your city.
 
-Osmada reads and analyzes the result of 
+Osmada reads and analyzes the result of
 [Overpass Augmented Diff](https://wiki.openstreetmap.org/wiki/Overpass_API/Augmented_Diffs) (*adiff*)
-requests in a database, it can then apply filters on those diffs and export the filtered diffs in various 
-formats. The intention is to filter out changes one wants to ignore and produce a report with 
+requests in a database, it can then apply filters on those diffs and export the filtered diffs in various
+formats. The intention is to filter out changes one wants to ignore and produce a report with
 the significant changes. This report can then be used by a mapper to check individual changes.
 
 An Augmented diff request produces an XML response composed of `<action>` elements. There are 3 types
-of actions : create, modify, delete. Each action contains two elements, the `<old>` and the `<new>` 
+of actions : create, modify, delete. Each action contains two elements, the `<old>` and the `<new>`
 versions of the same OSM object. Osmada analyzes those changes, loads them in a database and augments
-each change with information such as main tags, added and modified tags. Osmada can then filter the 
+each change with information such as main tags, added and modified tags. Osmada can then filter the
 changes, and export the filtered changes in the same format or a different one.
-    
+
 Osmada is designed to be used in workflows, typically composed of 3 steps :
 1. Load the changes in a database (SpatiaLite)
 2. Filter changes, for instance to ignore changes from trusted users or changes to unsignificant tags
@@ -103,13 +103,29 @@ You can have different workflows, configured in settings. By default, you only
 have one available called `passthrough` (basically useless) ; you can run it on
 some adiff file of yours:
 
-    $ ./manage.py workflow passthrough /home/steve/my_adiff.xml
+    $ ./manage.py workflow passthrough \
+        --input-paths /home/steve/my_adiff.xml
 
 It will output adiff XML code to stdout ; you may want to redirect it to some
 file:
 
-    $ ./manage.py workflow passthrough /home/steve/my_adiff.xml > out_adiff.xml
+    $ ./manage.py workflow passthrough --input-paths
+        /home/steve/my_adiff.xml > out_adiff.xml
 
+
+Alternatively, you can mention `--output-paths` :
+
+    $ ./manage.py workflow passthrough
+        --input-paths /home/steve/my_adiff.xml \
+        --output-paths out_adiff.xml
+
+*workflow* and *loaddata* commands can be made more verbose, using `LOGLEVEL`
+environment variable. Eg:
+
+    $ LOGLEVEL=DEBUG ./manage.py workflow passthrough \
+        --input-paths /home/steve/my_adiff.xml > out_adiff.xml
+
+Available log levels are : *INFO*, *DEBUG*, *WARNING*, *ERROR* and *CRITICAL*. Default is **INFO**.
 
 ### Loading data
 
@@ -243,4 +259,4 @@ something like:
 
 Bash to the rescue (example) :
 
-    $ for f in /home/steve/*.osm; do ./manage.py workflow passthrough "$f" > "/tmp/`basename -s.osm ${f}`.adiff" ; done
+    $ for f in /home/steve/*.osm; do ./manage.py workflow passthrough --input-paths "$f" --ouptput-paths "/tmp/`basename -s.osm ${f}`.adiff" ; done

@@ -15,20 +15,20 @@ class ImporterTests(TestCase):
 
     def test_open_nonexistent_file(self):
         with self.assertRaises(ImporterError):
-            importer = AdiffImporter('/tmp/do-not-exist-1234')
-            importer.run()
+            importer = AdiffImporter()
+            importer.run('/tmp/do-not-exist-1234')
 
     def test_open_valid_file(self):
-        importer = AdiffImporter(get_test_file_path('create_action.osm'))
+        importer = AdiffImporter()
         # We barely check there is no error
-        self.assertIsNotNone(importer.run())
+        self.assertIsNotNone(importer.run(get_test_file_path('create_action.osm')))
 
     def test_open_inexistant_file(self):
         with self.assertRaises(ImporterError):
-            importer = AdiffImporter(get_test_file_path('i-do-not-exist.osm'))
-            importer.run()
+            importer = AdiffImporter()
+            importer.run(get_test_file_path('i-do-not-exist.osm'))
 
     def test_open_invalid_data_file(self):
         with self.assertRaises(ImporterError):
-            importer = AdiffImporter(get_test_file_path('invalid_action.osm'))
-            importer.run()
+            importer = AdiffImporter()
+            importer.run(get_test_file_path('invalid_action.osm'))

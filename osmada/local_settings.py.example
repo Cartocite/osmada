@@ -27,19 +27,29 @@ IGNORED_KEYS = ['note', 'description']
 
 # WORKFLOWS
 #
-# The core setting :workflow definitions, as a dict.
+# The core setting :workflow definitions, as a list
 #
-# Keys of the dict are a name you choose, they are later used to select your
-# workflow you call from CLI (see workflow command)
+# Each list item represents one workflow definition.
 #
-# Each value of the dict is a workflow definition with several fields
+# A workflow definition is a dict with two keys
 #
-# **import**
-# Dotted path to an importer class. Available importers are:
+# - 'flow', which is a list of steps, each step being a dict with
+#    3 keys :
+#     - type: the importer class (as dotted path str)
+#     - class: theexecutable class (as dotted path str). It can either
+#       relate to a Filter, an Importer or an Exporter, see below for full list.
+#     - params : a list of parameters
+#       passed to the Exporter/Importer/Filter
+# - 'name', which is the name of your workflow
+#
+# The order of the list in `flow` matters : it gives the execution order.
+#
+# Available classes for `class` key of step item
+#
+# Type `import`:
 # - AdiffImporter
 #
-# **export**
-# Dotted path to an exporter class. Available exporters are:
+# Type `export`:
 # - AdiffExporter
 # - CSVExporter
 # - AnalyzedCSVExporter ; it includes more fields requiring some analysis :
@@ -48,54 +58,72 @@ IGNORED_KEYS = ['note', 'description']
 #   - removed_tags: tags removed by action
 #   - modified_tags: tags which value was changed by action
 #
-# **filters***
-# A list of couples repsenting filter to run on imported data in order to filter out some actions
-# from the diff.
-# eatch item from `filters` list is a couple:
-#
-# 1. dotted path to a filter class
-# 2. a list of parameters to pass to the filter
-#
-WORKFLOWS = {
-    'test_simple_csv': {
-        'import': 'osmdata.importers.AdiffImporter',
-        'export' : 'osmdata.exporters.CSVExporter',
-        'filters': [
-            ('osmdata.filters.IgnoreUsers', [TRUSTED_USERS]),
-            ('osmdata.filters.IgnoreNewTags', ['amenity=wastebasket']),
-            ('osmdata.filters.IgnoreElementsModification', ['highway=crossing']),
-            ('osmdata.filters.IgnoreNewTags', ['wikidata=*']),
-            ('osmdata.filters.IgnoreElementsModification', ['note=*']),
-            ('osmdata.filters.IgnoreKeys', [IGNORED_KEYS]),
-        ]
+# Type `filter`:
+# - IgnoreUsers
+# - IgnoreElementsCreation
+# - IgnoreElementsModification
+# - IgnoreKeys
+# - IgnoreSmallNodeMoves
+
+WORKFLOWS = [
+    {
+        'name': 'test_simple_csv',
+        'flow': [
+            {'type': 'import', 'class': 'osmdata.importers.AdiffImporter'},
+
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreUsers', 'params': [TRUSTED_USERS]} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsCreation', 'params': ['amenity=wastebasket']} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsModification', 'params': ['highway=crossing']} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsCreation', 'params': ['wikidata=*']} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsModification', 'params': ['note=*']} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreKeys', 'params': [IGNORED_KEYS]} ,
+
+
+            {'type': 'export', 'class': 'osmdata.exporters.CSVExporter'}
+        ],
     },
-    'test_advanced_csv': {
-        'import': 'osmdata.importers.AdiffImporter',
-        'export' : 'diffanalysis.exporters.AnalyzedCSVExporter',
-        'filters': [
-            ('osmdata.filters.IgnoreUsers', [TRUSTED_USERS]),
-            ('osmdata.filters.IgnoreNewTags', ['amenity=wastebasket']),
-            ('osmdata.filters.IgnoreElementsModification', ['highway=crossing']),
-            ('osmdata.filters.IgnoreNewTags', ['wikidata=*']),
-            ('osmdata.filters.IgnoreElementsModification', ['note=*']),
-            ('osmdata.filters.IgnoreKeys', [IGNORED_KEYS]),
-        ]
+    {
+        'name': 'test_advanced_csv',
+        'flow': [
+            {'type': 'import', 'class': 'osmdata.importers.AdiffImporter'},
+
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreUsers', 'params': [TRUSTED_USERS]} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsCreation', 'params': ['amenity=wastebasket']} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsModification', 'params': ['highway=crossing']} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsCreation', 'params': ['wikidata=*']} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsModification', 'params': ['note=*']} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreKeys', 'params': [IGNORED_KEYS]} ,
+            {'type': 'export', 'class': 'osmdata.exporters.AnalyzedCSVExporter'}
+        ],
     },
-    'test_advanced_adiff': {
-        'import': 'osmdata.importers.AdiffImporter',
-        'export' : 'osmdata.exporters.AdiffExporter',
-        'filters': [
-            ('osmdata.filters.IgnoreUsers', [TRUSTED_USERS]),
-            ('osmdata.filters.IgnoreNewTags', ['amenity=wastebasket']),
-            ('osmdata.filters.IgnoreElementsModification', ['highway=crossing']),
-            ('osmdata.filters.IgnoreNewTags', ['wikidata=*']),
-            ('osmdata.filters.IgnoreElementsModification', ['note=*']),
-            ('osmdata.filters.IgnoreKeys', [IGNORED_KEYS]),
-        ]
+    {
+        'name': 'test_advanced_adiff',
+        'flow': [
+            {'type': 'import', 'class': 'osmdata.importers.AdiffImporter'},
+
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreUsers', 'params': [TRUSTED_USERS]} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsCreation', 'params': ['amenity=wastebasket']} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsModification', 'params': ['highway=crossing']} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsCreation', 'params': ['wikidata=*']} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsModification', 'params': ['note=*']} ,
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreKeys', 'params': [IGNORED_KEYS]} ,
+            {'type': 'export', 'class': 'osmdata.exporters.AdiffExporter'}
+        ],
     },
-    'passthrough': {
-        'import': 'osmdata.importers.AdiffImporter',
-        'export' : 'osmdata.exporters.AdiffExporter',
-        'filters': [],
-    }
-}
+    'name': 'test_multiple_outputs',
+        'flow': [
+            {'type': 'import', 'class': 'osmdata.importers.AdiffImporter'},
+
+            {'type': 'filter', 'class': 'osmdata.filters.IgnoreUsers', 'params': [TRUSTED_USERS]} ,
+            {'type': 'export', 'class': 'osmdata.exporters.AdiffExporter'}
+            {'type': 'export', 'class': 'osmdata.exporters.AnalyzedCSVExporter'}
+        ],
+    },
+    {
+        'name': 'test_passthrough_adiff',
+        'flow': [
+            {'type': 'import', 'class': 'osmdata.importers.AdiffImporter'},
+            {'type': 'export', 'class': 'osmdata.exporters.AdiffExporter'}
+        ],
+    },
+]

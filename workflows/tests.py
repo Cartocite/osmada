@@ -8,7 +8,7 @@ from osmdata.exporters import CSVExporter
 from osmdata.models import Diff
 from osmdata.tests.utils import get_test_file_path
 
-from .models import WorkFlow
+from .models import Step, WorkFlow
 
 class TestWorkFlow(TestCase):
     fixtures = ['test_filters.json']  # Versailles Chantier
@@ -22,73 +22,74 @@ class TestWorkFlow(TestCase):
                     ('osmdata.filters.IgnoreElementsCreation', ['amenity=waterbasket']),
                     ('osmdata.filters.IgnoreElementsModification', ['amenity=waterbasket']),
                 ]
+        } # TO BE DELETED
+        ok_workflow = {
+            'name': 'test-wf',
+            'flow': [
+                {'type': 'import', 'class': 'osmdata.importers.AdiffImporter'},
+                {'type': 'filter', 'class': 'osmdata.filters.IgnoreUsers', 'params': ['jm']} ,
+                {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsCreation', 'params': ['amenity=wastebasket']} ,
+                {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsModification', 'params': ['amenity=wastebasket']} ,
+                {'type': 'export', 'class': 'osmdata.exporters.CSVExporter'}
+            ]
         }
         wf = WorkFlow.from_settings('gare_standard', ok_workflow)
 
         self.assertEqual(wf.name, 'gare_standard')
-        self.assertEqual(wf.ImporterClass, AdiffImporter)
-        self.assertEqual(wf.ExporterClass, CSVExporter)
-        self.assertEqual(len(wf.filters), 3)
-        self.assertIsInstance(wf.filters[0], IgnoreUsers)
-        self.assertIsInstance(wf.filters[1], IgnoreElementsCreation)
-        self.assertIsInstance(wf.filters[2], IgnoreElementsModification)
+        self.assertEqual(len(wf.steps), 5)
+        self.assertIsInstance(wf.steps[0].instance, AdiffImporter)
+        self.assertIsInstance(wf.steps[1].instance, IgnoreUsers)
+        self.assertIsInstance(wf.steps[2].instance, IgnoreElementsCreation)
+        self.assertIsInstance(wf.steps[3].instance, IgnoreElementsModification)
+        self.assertIsInstance(wf.steps[4].instance, CSVExporter)
 
     def test_invalid_workflow_from_settings(self):
-        missing_export = {'import': 'osmdata.importers.AdiffImporter'}
-        missing_import = {'export' : 'osmdata.exporters.CSVExporter'}
-        with self.assertRaises(ValueError):
-            WorkFlow.from_settings('a', missing_export)
-        with self.assertRaises(ValueError):
-            WorkFlow.from_settings('a', missing_import)
+        with self.assertRaises(ValueError, msg='missing name'):
+            WorkFlow.from_settings('a', {'flow': []})
+
+        with self.assertRaises(ValueError, msg='missing flow'):
+            WorkFlow.from_settings('a', {'name': 'foo'})
+
+        with self.assertRaises(ValueError, msg='unknown key'):
+            WorkFlow.from_settings('a', {
+                'name': 'foo', 'flow': [], 'bar': 'zut'
+            })
+
+        with self.assertRaises(ValueError, msg='wrong step type'):
+            WorkFlow.from_settings('a', {
+                'name': 'foo', 'flow': [
+                    {'type': 'zut', 'class': 'osmdata.exporters.CSVExporter'},
+                ]
+            })
+
+        with self.assertRaises(ValueError, msg='inexistant step class'):
+            WorkFlow.from_settings('a', {
+                'name': 'foo',
+                'flow': [{'type': 'exporter', 'class': 'osmdata.exporters.No'}]
+            })
+
+    def test_run_empty(self):
+        wf = WorkFlow(
+            name='test',
+            steps=[]
+        )
+        wf.run([get_test_file_path('create_action.osm')], ['/dev/null'])
 
     def test_run_import(self):
         wf = WorkFlow(
             name='test',
-            importer=osmdata.importers.AdiffImporter,
-            exporter=osmdata.exporters.CSVExporter)
-
-        wf.run_import(get_test_file_path('create_action.osm'))
-
-    def test_iter_filters_w_filter(self):
-        # pretty stupid : it keeps the first
-        class _KeepFirstFilter(AbstractActionFilter):
-            def __init__(self):
-                pass
-
-            def filter(self, qs):
-                return qs.all()[:1]
-
-        wf = WorkFlow(
-            name='test',
-            importer=osmdata.importers.AdiffImporter,
-            exporter=osmdata.exporters.CSVExporter,
-
+            steps=[
+                Step(Step.STEP_IMPORT, osmdata.importers.AdiffImporter, [])
+            ]
         )
-        wf.filters = [_KeepFirstFilter()]
-        wf.diff = Diff.objects.first()
-        result = list(wf.iter_filters())
-        self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0][0], _KeepFirstFilter)
-        self.assertEqual(list(result[0][1]), list(wf.diff.actions.all()[:1]))
+        self.assertEqual(Diff.objects.count(), 1)
+        self.assertEqual(ActionReport.objects.count(), 0)
 
+        wf.run([get_test_file_path('create_action.osm')], ['/dev/null'])
 
-    def test_iter_filters_wo_filter(self):
-        wf = WorkFlow(
-            name='test',
-            importer=osmdata.importers.AdiffImporter,
-            exporter=osmdata.exporters.CSVExporter)
-        wf.diff = Diff.objects.first()
-        result = list(wf.iter_filters())
-        self.assertEqual(result, [])
-
-    def test_iter_filters_wo_diff(self):
-        wf = WorkFlow(
-            name='test',
-            importer=osmdata.importers.AdiffImporter,
-            exporter=osmdata.exporters.CSVExporter)
-
-        with self.assertRaises(ValueError):
-            list(wf.iter_filters())
+        self.assertEqual(Diff.objects.count(), 2)
+        # Check that action reports have been made
+        self.assertEqual(ActionReport.objects.count(), 1)
 
     def test_output(self):
         class _CounterExporter:
@@ -97,21 +98,33 @@ class TestWorkFlow(TestCase):
 
         wf = WorkFlow(
             name='test',
-            importer=osmdata.importers.AdiffImporter,
-            exporter=_CounterExporter)
+            steps=[
+                Step(Step.STEP_IMPORT, osmdata.importers.AdiffImporter, []),
+                Step(Step.STEP_EXPORT, _CounterExporter, [])
+            ]
+        )
+        wf.run([get_test_file_path('create_action.osm')], ['/dev/null'])
+        self.assertEqual(wf.last_step_output, 1)
 
-        wf.diff = Diff.objects.first()
-        wf.out_qs = wf.diff.actions
-
-        self.assertEqual(wf.write_output(), 1)
-
-    def test_make_actionreports(self):
+    def test_filter_filter_in(self):
         wf = WorkFlow(
             name='test',
-            importer=osmdata.importers.AdiffImporter,
-            exporter=osmdata.exporters.CSVExporter)
+            steps=[
+                Step(Step.STEP_IMPORT, osmdata.importers.AdiffImporter, []),
+                Step(Step.STEP_FILTER, osmdata.filters.IgnoreUsers,
+                     [["DoNotExist"]])
+            ]
+        )
+        wf.run([get_test_file_path('create_action.osm')], ['/dev/null'])
+        self.assertEqual(wf.last_step_output.count(), 1)
 
-        wf.diff = Diff.objects.first()
-        wf.make_action_reports()
-
-        self.assertEqual(ActionReport.objects.count(), wf.diff.actions.count())
+    def test_filter_filter_out(self):
+        wf = WorkFlow(
+            name='test',
+            steps=[
+                Step(Step.STEP_IMPORT, osmdata.importers.AdiffImporter, []),
+                Step(Step.STEP_FILTER, osmdata.filters.IgnoreUsers, [["Yann_L"]])
+            ]
+        )
+        wf.run([get_test_file_path('create_action.osm')], ['/dev/null'])
+        self.assertEqual(wf.last_step_output.count(), 0)
