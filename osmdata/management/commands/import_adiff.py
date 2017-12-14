@@ -1,8 +1,10 @@
+import logging
+
 from django.core.management.base import BaseCommand, CommandError
 
 from ...importers import AdiffImporter, ImporterError
 
-DEBUG = True
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -19,4 +21,6 @@ class Command(BaseCommand):
         except ImporterError as e:
             raise CommandError(e)
 
-        print('Created {} containing {} actions.'.format(diff, diff.actions.count()))
+        logger.info(
+            'Created {} containing {} actions.'.format(
+                diff, diff.actions.count()))

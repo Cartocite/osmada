@@ -1,9 +1,18 @@
-import sys
+import logging
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from ...models import WorkFlow
+
+
+logger = logging.getLogger(__name__)
+
+
+class LoggedCommandError(CommandError):
+    def __init__(self, msg, *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+        logger.error(self)
 
 
 class Command(BaseCommand):
@@ -23,18 +32,18 @@ class Command(BaseCommand):
         try:
             workflow_spec = workflows[workflow_name]
         except KeyError:
-            raise CommandError('Workflow "{}" does not exist'.format(
+            raise LoggedCommandError('Workflow "{}" does not exist'.format(
                 workflow_name))
 
-        sys.stderr.write('[0] Parsing workflow "{}"...'.format(workflow_name))
+        logger.debug('[0] Parsing workflow "{}"...'.format(workflow_name))
         try:
             workflow = WorkFlow.from_settings(workflow_name, workflow_spec)
         except (KeyError, ImportError) as e:
-            raise CommandError(
+            raise LoggedCommandError(
                 'An error occured during workflow parsing : "{}"'.format(e))
-        sys.stderr.write('OK\n')
+        else:
+            logger.debug('[0] OK\n')
 
-        sys.stderr.write('[1] Running workflow…')
-        sys.stderr.flush()
+        logger.info('[1] Running workflow {}…'.format(workflow_name))
         workflow.run(input_path)
-        sys.stderr.write('OK')
+        logger.info('[1] OK')

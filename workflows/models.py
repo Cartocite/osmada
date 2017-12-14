@@ -1,9 +1,13 @@
+import logging
+
 from django.utils.module_loading import import_string
 
 
 from diffanalysis.models import ActionReport
 from osmdata.models import Action
 from osmdata.patchers import FixRemoveOperationMetadata
+
+logger = logging.getLogger(__name__)
 
 
 class Step:
@@ -50,7 +54,7 @@ class WorkFlow:
                 qs = diff.actions
                 self.last_step_output = qs
                 for patch_name in self.apply_data_patches(qs):
-                    pass # FIXME
+                    logger.debug('Applying data patch {}'.format(patch_name))
 
                 self.make_action_reports(qs)
 

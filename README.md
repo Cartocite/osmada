@@ -111,6 +111,13 @@ file:
     $ ./manage.py workflow passthrough /home/steve/my_adiff.xml > out_adiff.xml
 
 
+*workflow* and *loaddata* commands can be made more verbose, using `LOGLEVEL`
+environment variable. Eg:
+
+    $ LOGLEVEL=DEBUG ./manage.py workflow passthrough /home/steve/my_adiff.xml > out_adiff.xml
+
+Available log levels are : *INFO*, *DEBUG*, *WARNING*, *ERROR* and *CRITICAL*. Default is **INFO**.
+
 ### Loading data
 
 You may want to load data into the DB without applying an entire workflow.

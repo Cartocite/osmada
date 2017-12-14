@@ -131,6 +131,33 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': os.environ.get('LOGLEVEL', 'INFO'),
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'workflows': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'osmdata': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+
+    },
+}
 
 TAGS_IMPORTANCE = ['highway=*', 'railway=*', 'shop=*', 'name=*']
 
