@@ -32,6 +32,10 @@ A workflow is defined as a Python settings file, a [commented example](osmada/lo
 Installing
 ----------
 
+### Clone Osmada
+    $ git clone https://github.com/Cartocite/osmada.git
+    $ cd osmada
+
 The most convenient is to use a Python virtualenv.
 
 ### Install virtualenv itself
@@ -41,6 +45,7 @@ eg ; on Debian-like :
     $ sudo apt install python3 virtualenv \
       spatialite-bin libsqlite3-mod-spatialite libproj-dev gdal-bin
 
+    
 ### Create the virtualenv
 On Windows
 
@@ -103,26 +108,26 @@ You can have different workflows, configured in settings. By default, you only
 have one available called `passthrough` (basically useless) ; you can run it on
 some adiff file of yours:
 
-    $ ./manage.py workflow passthrough \
+    $ ./manage.py workflow passthrough_adiff \
         --input-paths /home/steve/my_adiff.xml
 
 It will output adiff XML code to stdout ; you may want to redirect it to some
 file:
 
-    $ ./manage.py workflow passthrough --input-paths
+    $ ./manage.py workflow passthrough_adiff --input-paths
         /home/steve/my_adiff.xml > out_adiff.xml
 
 
 Alternatively, you can mention `--output-paths` :
 
-    $ ./manage.py workflow passthrough
+    $ ./manage.py workflow passthrough_adiff
         --input-paths /home/steve/my_adiff.xml \
         --output-paths out_adiff.xml
 
 *workflow* and *loaddata* commands can be made more verbose, using `LOGLEVEL`
 environment variable. Eg:
 
-    $ LOGLEVEL=DEBUG ./manage.py workflow passthrough \
+    $ LOGLEVEL=DEBUG ./manage.py workflow passthrough_adiff \
         --input-paths /home/steve/my_adiff.xml > out_adiff.xml
 
 Available log levels are : *INFO*, *DEBUG*, *WARNING*, *ERROR* and *CRITICAL*. Default is **INFO**.
@@ -257,6 +262,6 @@ something like:
 
 ### What about treating a whole folder of adiff ?
 
-Bash to the rescue (example) :
+Bash to the rescue (this example doesn't work with all filenames) :
 
     $ for f in /home/steve/*.osm; do ./manage.py workflow passthrough --input-paths "$f" --ouptput-paths "/tmp/`basename -s.osm ${f}`.adiff" ; done
