@@ -93,7 +93,7 @@ WORKFLOWS = [
             {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsCreation', 'params': ['wikidata=*']} ,
             {'type': 'filter', 'class': 'osmdata.filters.IgnoreElementsModification', 'params': ['note=*']} ,
             {'type': 'filter', 'class': 'osmdata.filters.IgnoreKeys', 'params': [IGNORED_KEYS]} ,
-            {'type': 'export', 'class': 'osmdata.exporters.AnalyzedCSVExporter'}
+            {'type': 'export', 'class': 'diffanalysis.exporters.AnalyzedCSVExporter'}
         ],
     },
     {
@@ -116,7 +116,7 @@ WORKFLOWS = [
 
             {'type': 'filter', 'class': 'osmdata.filters.IgnoreUsers', 'params': [TRUSTED_USERS]} ,
             {'type': 'export', 'class': 'osmdata.exporters.AdiffExporter'}
-            {'type': 'export', 'class': 'osmdata.exporters.AnalyzedCSVExporter'}
+            {'type': 'export', 'class': 'diffanalysis.exporters.AnalyzedCSVExporter'}
         ],
     },
     {
