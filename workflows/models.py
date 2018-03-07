@@ -27,7 +27,7 @@ class Step:
 def reversed_copy(l):
     # We use those list as stack so we want to reverse them.
     l_stack = l.copy()
-    l.reverse()
+    l_stack.reverse()
     return l_stack
 
 
