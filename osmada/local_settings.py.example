@@ -120,7 +120,7 @@ WORKFLOWS = [
         ],
     },
     {
-        'name': 'test_passthrough_adiff',
+        'name': 'passthrough_adiff',
         'flow': [
             {'type': 'import', 'class': 'osmdata.importers.AdiffImporter'},
             {'type': 'export', 'class': 'osmdata.exporters.AdiffExporter'}
