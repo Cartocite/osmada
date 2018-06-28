@@ -110,12 +110,13 @@ WORKFLOWS = [
             {'type': 'export', 'class': 'osmdata.exporters.AdiffExporter'}
         ],
     },
+    {
     'name': 'test_multiple_outputs',
         'flow': [
             {'type': 'import', 'class': 'osmdata.importers.AdiffImporter'},
 
             {'type': 'filter', 'class': 'osmdata.filters.IgnoreUsers', 'params': [TRUSTED_USERS]} ,
-            {'type': 'export', 'class': 'osmdata.exporters.AdiffExporter'}
+            {'type': 'export', 'class': 'osmdata.exporters.AdiffExporter'} ,
             {'type': 'export', 'class': 'diffanalysis.exporters.AnalyzedCSVExporter'}
         ],
     },
